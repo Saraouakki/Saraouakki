@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { notion } from "@/lib/notion";
 import { DOSSIER_STATUTS } from "@/lib/types";
+import { getSession } from "@/lib/server-session";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session || session.role !== "Interne") {
+    return NextResponse.json({ error: "Action réservée à l'équipe interne." }, { status: 403 });
+  }
+
   const { id } = await params;
   const body = await request.json().catch(() => null);
   const statut = body?.statut;

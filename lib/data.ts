@@ -25,6 +25,8 @@ import type {
   DocumentItem,
   Mouvement,
   Etape,
+  Fournisseur,
+  UserAccount,
 } from "./types";
 
 function toClient(p: Page): Client {
@@ -65,8 +67,26 @@ function toEntrepot(p: Page): Entrepot {
   };
 }
 
+function toFournisseur(p: Page): Fournisseur {
+  return {
+    id: p.id,
+    nom: getTitle(p, "Nom"),
+    categorie: getSelect(p, "Catégorie"),
+    contact: getText(p, "Contact"),
+    telephone: getPhone(p, "Téléphone"),
+    email: getEmail(p, "Email"),
+    adresse: getText(p, "Adresse"),
+    pays: getText(p, "Pays"),
+    note: getSelect(p, "Note"),
+  };
+}
+
 export async function getClients(): Promise<Client[]> {
   return (await queryAll(DS.clients)).map(toClient);
+}
+
+export async function getFournisseurs(): Promise<Fournisseur[]> {
+  return (await queryAll(DS.fournisseurs)).map(toFournisseur);
 }
 
 export async function getTransporteurs(): Promise<Transporteur[]> {
@@ -111,11 +131,13 @@ export async function getChauffeurs(): Promise<Chauffeur[]> {
 }
 
 export async function getArticles(): Promise<Article[]> {
-  const [pages, entrepots] = await Promise.all([
+  const [pages, entrepots, fournisseurs] = await Promise.all([
     queryAll(DS.articles),
     queryAll(DS.entrepots),
+    queryAll(DS.fournisseurs),
   ]);
   const eMap = nameMap(entrepots, "Nom");
+  const fMap = nameMap(fournisseurs, "Nom");
   return pages.map((p) => ({
     id: p.id,
     nom: getTitle(p, "Nom"),
@@ -125,11 +147,13 @@ export async function getArticles(): Promise<Article[]> {
     seuil: getNumber(p, "Seuil de réappro"),
     entrepotNoms: resolveNames(getRelationIds(p, "Entrepôt"), eMap),
     prixUnitaire: getNumber(p, "Prix unitaire"),
+    fournisseurIds: getRelationIds(p, "Fournisseur"),
+    fournisseurNoms: resolveNames(getRelationIds(p, "Fournisseur"), fMap),
   }));
 }
 
 export async function getDossiers(): Promise<Dossier[]> {
-  const [pages, clients, transporteurs, vehicules, chauffeurs, entrepots] =
+  const [pages, clients, transporteurs, vehicules, chauffeurs, entrepots, fournisseurs] =
     await Promise.all([
       queryAll(DS.dossiers),
       queryAll(DS.clients),
@@ -137,17 +161,20 @@ export async function getDossiers(): Promise<Dossier[]> {
       queryAll(DS.vehicules),
       queryAll(DS.chauffeurs),
       queryAll(DS.entrepots),
+      queryAll(DS.fournisseurs),
     ]);
   const cMap = nameMap(clients, "Nom");
   const tMap = nameMap(transporteurs, "Nom");
   const vMap = nameMap(vehicules, "Immatriculation");
   const chMap = nameMap(chauffeurs, "Nom");
   const eMap = nameMap(entrepots, "Nom");
+  const fMap = nameMap(fournisseurs, "Nom");
 
   return pages
     .map((p) => ({
       id: p.id,
       reference: getTitle(p, "Référence"),
+      clientIds: getRelationIds(p, "Client"),
       clientNoms: resolveNames(getRelationIds(p, "Client"), cMap),
       type: getSelect(p, "Type"),
       mode: getSelect(p, "Mode"),
@@ -156,6 +183,8 @@ export async function getDossiers(): Promise<Dossier[]> {
       vehiculeNoms: resolveNames(getRelationIds(p, "Véhicule"), vMap),
       chauffeurNoms: resolveNames(getRelationIds(p, "Chauffeur"), chMap),
       entrepotNoms: resolveNames(getRelationIds(p, "Entrepôt"), eMap),
+      fournisseurIds: getRelationIds(p, "Fournisseur"),
+      fournisseurNoms: resolveNames(getRelationIds(p, "Fournisseur"), fMap),
       origine: getText(p, "Origine"),
       destination: getText(p, "Destination"),
       dateDepart: getDate(p, "Date de départ"),
@@ -190,11 +219,13 @@ export async function getDocuments(): Promise<DocumentItem[]> {
 }
 
 export async function getMouvements(): Promise<Mouvement[]> {
-  const [pages, articles] = await Promise.all([
+  const [pages, articles, fournisseurs] = await Promise.all([
     queryAll(DS.mouvements),
     queryAll(DS.articles),
+    queryAll(DS.fournisseurs),
   ]);
   const aMap = nameMap(articles, "Nom");
+  const fMap = nameMap(fournisseurs, "Nom");
   return pages
     .map((p) => ({
       id: p.id,
@@ -204,9 +235,34 @@ export async function getMouvements(): Promise<Mouvement[]> {
       quantite: getNumber(p, "Quantité"),
       date: getDate(p, "Date"),
       dossierIds: getRelationIds(p, "Dossier lié"),
+      fournisseurIds: getRelationIds(p, "Fournisseur"),
+      fournisseurNoms: resolveNames(getRelationIds(p, "Fournisseur"), fMap),
       note: getText(p, "Note"),
     }))
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+function toUserAccount(p: Page): UserAccount {
+  const clientIds = getRelationIds(p, "Client");
+  const fournisseurIds = getRelationIds(p, "Fournisseur");
+  return {
+    id: p.id,
+    nom: getTitle(p, "Nom"),
+    email: getEmail(p, "Email"),
+    role: (getSelect(p, "Rôle") || "Client") as UserAccount["role"],
+    clientId: clientIds[0] ?? null,
+    fournisseurId: fournisseurIds[0] ?? null,
+    passwordHash: getText(p, "Mot de passe (hash)"),
+    statut: getSelect(p, "Statut"),
+  };
+}
+
+export async function getUserByEmail(email: string): Promise<UserAccount | undefined> {
+  const pages = await queryAll(DS.utilisateurs);
+  const normalized = email.trim().toLowerCase();
+  return pages
+    .map(toUserAccount)
+    .find((u) => u.email.trim().toLowerCase() === normalized);
 }
 
 export async function getEtapes(): Promise<Etape[]> {

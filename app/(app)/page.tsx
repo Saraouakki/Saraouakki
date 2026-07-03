@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDossiers, getVehicules, getArticles } from "@/lib/data";
+import { getDossiers, getVehicules, getArticles, getFournisseurs, getClients } from "@/lib/data";
 import StatCard from "@/components/StatCard";
 import Badge from "@/components/Badge";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
@@ -13,10 +13,12 @@ function formatMoney(n: number | null) {
 
 export default async function OverviewPage() {
   try {
-    const [dossiers, vehicules, articles] = await Promise.all([
+    const [dossiers, vehicules, articles, fournisseurs, clients] = await Promise.all([
       getDossiers(),
       getVehicules(),
       getArticles(),
+      getFournisseurs(),
+      getClients(),
     ]);
 
     const actifs = dossiers.filter((d) => d.statut !== "Livré" && d.statut !== "Annulé");
@@ -47,6 +49,8 @@ export default async function OverviewPage() {
             value={`${vehiculesDispos}/${vehicules.length}`}
           />
           <StatCard label="Alertes stock" value={articlesSousSeuil.length} sub="sous seuil de réappro" />
+          <StatCard label="Clients" value={clients.length} />
+          <StatCard label="Fournisseurs" value={fournisseurs.length} />
         </div>
 
         <div className="grid-2">

@@ -20,6 +20,40 @@ export interface Transporteur {
   note: string;
 }
 
+export interface Fournisseur {
+  id: string;
+  nom: string;
+  categorie: string;
+  contact: string;
+  telephone: string;
+  email: string;
+  adresse: string;
+  pays: string;
+  note: string;
+}
+
+export type Role = "Interne" | "Client" | "Fournisseur";
+
+export interface UserAccount {
+  id: string;
+  nom: string;
+  email: string;
+  role: Role;
+  clientId: string | null;
+  fournisseurId: string | null;
+  passwordHash: string;
+  statut: string;
+}
+
+export interface SessionData {
+  userId: string;
+  nom: string;
+  email: string;
+  role: Role;
+  clientId: string | null;
+  fournisseurId: string | null;
+}
+
 export interface Entrepot {
   id: string;
   nom: string;
@@ -58,11 +92,14 @@ export interface Article {
   seuil: number | null;
   entrepotNoms: string[];
   prixUnitaire: number | null;
+  fournisseurIds: string[];
+  fournisseurNoms: string[];
 }
 
 export interface Dossier {
   id: string;
   reference: string;
+  clientIds: string[];
   clientNoms: string[];
   type: string;
   mode: string;
@@ -71,6 +108,8 @@ export interface Dossier {
   vehiculeNoms: string[];
   chauffeurNoms: string[];
   entrepotNoms: string[];
+  fournisseurIds: string[];
+  fournisseurNoms: string[];
   origine: string;
   destination: string;
   dateDepart: string | null;
@@ -102,6 +141,8 @@ export interface Mouvement {
   quantite: number | null;
   date: string | null;
   dossierIds: string[];
+  fournisseurIds: string[];
+  fournisseurNoms: string[];
   note: string;
 }
 

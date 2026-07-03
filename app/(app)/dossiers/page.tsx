@@ -27,6 +27,7 @@ export default async function DossiersPage() {
                   <th>Mode</th>
                   <th>Statut</th>
                   <th>Transporteur</th>
+                  <th>Fournisseur</th>
                   <th>Trajet</th>
                   <th>ETA</th>
                   <th>Priorité</th>
@@ -47,6 +48,7 @@ export default async function DossiersPage() {
                       <Badge label={d.statut} />
                     </td>
                     <td>{d.transporteurNoms.join(", ") || "—"}</td>
+                    <td>{d.fournisseurNoms.join(", ") || "—"}</td>
                     <td>
                       {d.origine || "—"} → {d.destination || "—"}
                     </td>
@@ -56,7 +58,7 @@ export default async function DossiersPage() {
                 ))}
                 {dossiers.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="empty-state">
+                    <td colSpan={10} className="empty-state">
                       Aucun dossier pour le moment.
                     </td>
                   </tr>

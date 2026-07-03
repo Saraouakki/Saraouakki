@@ -17,6 +17,8 @@ export const DS = {
   documents: required("NOTION_DS_DOCUMENTS"),
   mouvements: required("NOTION_DS_MOUVEMENTS"),
   etapes: required("NOTION_DS_ETAPES"),
+  fournisseurs: required("NOTION_DS_FOURNISSEURS"),
+  utilisateurs: required("NOTION_DS_UTILISATEURS"),
 };
 
 function required(key: string): string {

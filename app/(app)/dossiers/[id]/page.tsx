@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDossier, getEtapes, getDocuments } from "@/lib/data";
+import { getSession } from "@/lib/server-session";
 import Badge from "@/components/Badge";
 import StatusUpdater from "@/components/StatusUpdater";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
@@ -20,6 +21,9 @@ export default async function DossierDetailPage({
   const { id } = await params;
 
   try {
+    const session = await getSession();
+    if (!session) notFound();
+
     const [dossier, etapes, documents] = await Promise.all([
       getDossier(id),
       getEtapes(),
@@ -28,6 +32,15 @@ export default async function DossierDetailPage({
 
     if (!dossier) notFound();
 
+    const isOwner =
+      session.role === "Interne" ||
+      (session.role === "Client" && !!session.clientId && dossier.clientIds.includes(session.clientId)) ||
+      (session.role === "Fournisseur" &&
+        !!session.fournisseurId &&
+        dossier.fournisseurIds.includes(session.fournisseurId));
+
+    if (!isOwner) notFound();
+
     const etapesDossier = etapes.filter((e) => e.dossierIds.includes(id));
     const documentsDossier = documents.filter((doc) => doc.dossierIds.includes(id));
 
@@ -35,8 +48,8 @@ export default async function DossierDetailPage({
       <>
         <div className="page-header">
           <p>
-            <Link href="/dossiers" className="link-primary">
-              ← Dossiers
+            <Link href={session.role === "Interne" ? "/dossiers" : "/mon-espace"} className="link-primary">
+              ← {session.role === "Interne" ? "Dossiers" : "Mon espace"}
             </Link>
           </p>
           <h1>{dossier.reference}</h1>
@@ -94,6 +107,10 @@ export default async function DossierDetailPage({
                   <div className="v">{dossier.entrepotNoms.join(", ") || "—"}</div>
                 </div>
                 <div>
+                  <div className="k">Fournisseur</div>
+                  <div className="v">{dossier.fournisseurNoms.join(", ") || "—"}</div>
+                </div>
+                <div>
                   <div className="k">Bureau de douane</div>
                   <div className="v">{dossier.bureauDouane || "—"}</div>
                 </div>
@@ -146,14 +163,16 @@ export default async function DossierDetailPage({
           </div>
 
           <div>
-            <div className="panel">
-              <div className="panel-header">
-                <h2>Changer le statut</h2>
+            {session.role === "Interne" && (
+              <div className="panel">
+                <div className="panel-header">
+                  <h2>Changer le statut</h2>
+                </div>
+                <div style={{ padding: 20 }}>
+                  <StatusUpdater id={dossier.id} current={dossier.statut} />
+                </div>
               </div>
-              <div style={{ padding: 20 }}>
-                <StatusUpdater id={dossier.id} current={dossier.statut} />
-              </div>
-            </div>
+            )}
 
             <div className="panel">
               <div className="panel-header">

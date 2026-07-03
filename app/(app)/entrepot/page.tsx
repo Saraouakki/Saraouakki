@@ -85,6 +85,7 @@ export default async function EntrepotPage() {
                   <th>Quantité</th>
                   <th>Seuil</th>
                   <th>Entrepôt</th>
+                  <th>Fournisseur</th>
                   <th>Prix unitaire</th>
                 </tr>
               </thead>
@@ -99,13 +100,14 @@ export default async function EntrepotPage() {
                       <td>{alerte ? <Badge label="À fournir" /> : a.quantite ?? "—"}</td>
                       <td>{a.seuil ?? "—"}</td>
                       <td>{a.entrepotNoms.join(", ") || "—"}</td>
+                      <td>{a.fournisseurNoms.join(", ") || "—"}</td>
                       <td>{a.prixUnitaire != null ? `${a.prixUnitaire} $` : "—"}</td>
                     </tr>
                   );
                 })}
                 {articles.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="empty-state">
+                    <td colSpan={8} className="empty-state">
                       Aucun article en stock.
                     </td>
                   </tr>
@@ -127,6 +129,7 @@ export default async function EntrepotPage() {
                   <th>Article</th>
                   <th>Type</th>
                   <th>Quantité</th>
+                  <th>Fournisseur</th>
                   <th>Date</th>
                   <th>Note</th>
                 </tr>
@@ -142,13 +145,14 @@ export default async function EntrepotPage() {
                       </span>
                     </td>
                     <td>{m.quantite ?? "—"}</td>
+                    <td>{m.fournisseurNoms.join(", ") || "—"}</td>
                     <td>{m.date ?? "—"}</td>
                     <td>{m.note || "—"}</td>
                   </tr>
                 ))}
                 {mouvements.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="empty-state">
+                    <td colSpan={7} className="empty-state">
                       Aucun mouvement enregistré.
                     </td>
                   </tr>
