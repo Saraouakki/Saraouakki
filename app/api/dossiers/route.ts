@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { notion, DS, invalidateDataSource } from "@/lib/notion";
 import { getSession } from "@/lib/server-session";
 import { canWrite } from "@/lib/access";
-import { DOSSIER_STATUTS } from "@/lib/types";
+import { DOSSIER_STATUTS, BUREAU_DOUANE_OPTIONS, REGIME_DOUANIER_OPTIONS } from "@/lib/types";
 import { logAudit } from "@/lib/audit";
 import { captureException } from "@/lib/monitoring";
 
@@ -26,6 +26,10 @@ function optionalNumber(value: unknown) {
 function text(value: unknown) {
   const s = typeof value === "string" ? value : "";
   return { rich_text: s ? [{ text: { content: s } }] : [] };
+}
+
+function optionalSelect(value: unknown) {
+  return typeof value === "string" && value ? { select: { name: value } } : { select: null };
 }
 
 export async function POST(request: NextRequest) {
@@ -52,6 +56,17 @@ export async function POST(request: NextRequest) {
   if (!PRIORITES.includes(priorite)) {
     return NextResponse.json({ error: "Priorité invalide." }, { status: 400 });
   }
+  const bureauDouane = typeof body?.bureauDouane === "string" ? body.bureauDouane : "";
+  if (bureauDouane && !BUREAU_DOUANE_OPTIONS.includes(bureauDouane as (typeof BUREAU_DOUANE_OPTIONS)[number])) {
+    return NextResponse.json({ error: "Bureau de douane invalide." }, { status: 400 });
+  }
+  const regimeDouanier = typeof body?.regimeDouanier === "string" ? body.regimeDouanier : "";
+  if (
+    regimeDouanier &&
+    !REGIME_DOUANIER_OPTIONS.includes(regimeDouanier as (typeof REGIME_DOUANIER_OPTIONS)[number])
+  ) {
+    return NextResponse.json({ error: "Régime douanier invalide." }, { status: 400 });
+  }
 
   try {
     const page = await notion.pages.create({
@@ -70,7 +85,9 @@ export async function POST(request: NextRequest) {
         Fournisseur: optionalRelation(body?.fournisseurId),
         Origine: text(body?.origine),
         Destination: text(body?.destination),
-        "Bureau de douane": text(body?.bureauDouane),
+        "Bureau de douane": optionalSelect(bureauDouane),
+        "Régime douanier": optionalSelect(regimeDouanier),
+        "N° DUM (BADR)": text(body?.numeroDUM),
         "N° conteneur/plaque": text(body?.numero),
         "Date de départ": optionalDate(body?.dateDepart),
         ETA: optionalDate(body?.eta),

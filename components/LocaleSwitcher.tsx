@@ -33,6 +33,13 @@ export default function LocaleSwitcher({
       >
         EN
       </button>
+      <button
+        className={locale === "ar" ? "active" : ""}
+        onClick={() => handleChange("ar")}
+        aria-label="العربية"
+      >
+        عربي
+      </button>
     </div>
   );
 }

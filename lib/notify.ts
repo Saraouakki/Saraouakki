@@ -1,4 +1,5 @@
 import { sendEmail } from "./mailer";
+import { sendWhatsApp } from "./whatsapp";
 
 export async function notifySlack(message: string): Promise<void> {
   const webhook = process.env.SLACK_WEBHOOK_URL;
@@ -21,6 +22,7 @@ interface DossierStatusChangeInput {
   reference: string;
   statut: string;
   clientEmails: string[];
+  clientPhones: string[];
   appUrl: string;
   dossierPath: string;
 }
@@ -35,12 +37,12 @@ export async function notifyDossierStatusChange(input: DossierStatusChangeInput)
     <p><a href="${link}">Voir le détail du dossier</a></p>
     <p>— Logistique &amp; Transit</p>
   `;
+  const whatsappMessage = `📦 Dossier ${input.reference} : nouveau statut *${input.statut}*.\n${link}`;
 
-  await Promise.all(
-    input.clientEmails.map((to) =>
-      sendEmail({ to, subject, html, text: `${subject}\n${link}` })
-    )
-  );
+  await Promise.all([
+    ...input.clientEmails.map((to) => sendEmail({ to, subject, html, text: `${subject}\n${link}` })),
+    ...input.clientPhones.map((to) => sendWhatsApp(to, whatsappMessage)),
+  ]);
 
   await notifySlack(`📦 Dossier *${input.reference}* → *${input.statut}* (${link})`);
 }

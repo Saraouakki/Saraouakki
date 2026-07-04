@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BUREAU_DOUANE_OPTIONS, REGIME_DOUANIER_OPTIONS } from "@/lib/types";
 
 interface Option {
   id: string;
@@ -37,6 +38,8 @@ export default function NouveauDossierForm(props: Props) {
     origine: "",
     destination: "",
     bureauDouane: "",
+    regimeDouanier: "",
+    numeroDUM: "",
     numero: "",
     dateDepart: "",
     eta: "",
@@ -194,7 +197,33 @@ export default function NouveauDossierForm(props: Props) {
         </label>
         <label>
           Bureau de douane
-          <input value={form.bureauDouane} onChange={(e) => set("bureauDouane", e.target.value)} />
+          <select value={form.bureauDouane} onChange={(e) => set("bureauDouane", e.target.value)}>
+            <option value="">—</option>
+            {BUREAU_DOUANE_OPTIONS.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Régime douanier
+          <select value={form.regimeDouanier} onChange={(e) => set("regimeDouanier", e.target.value)}>
+            <option value="">—</option>
+            {REGIME_DOUANIER_OPTIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          N° DUM (BADR)
+          <input
+            value={form.numeroDUM}
+            onChange={(e) => set("numeroDUM", e.target.value)}
+            placeholder="DUM/2026/000123456"
+          />
         </label>
         <label>
           N° conteneur/plaque

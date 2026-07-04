@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Badge from "./Badge";
 import type { Fournisseur } from "@/lib/types";
+import { arrayToCsv, downloadCsv } from "@/lib/csv";
 
 interface Props {
   fournisseurs: Fournisseur[];
@@ -21,6 +22,23 @@ export default function FournisseursTable({ fournisseurs, articleCounts, dossier
     );
   }, [fournisseurs, query]);
 
+  function handleExport() {
+    const csv = arrayToCsv(
+      ["Nom", "Catégorie", "Contact", "Email", "Téléphone", "Pays", "Articles fournis", "Dossiers liés"],
+      filtered.map((f) => [
+        f.nom,
+        f.categorie,
+        f.contact,
+        f.email,
+        f.telephone,
+        f.pays,
+        articleCounts[f.id] ?? 0,
+        dossierCounts[f.id] ?? 0,
+      ])
+    );
+    downloadCsv(`fournisseurs-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  }
+
   return (
     <>
       <div className="list-toolbar">
@@ -33,6 +51,9 @@ export default function FournisseursTable({ fournisseurs, articleCounts, dossier
         <span className="list-count">
           {filtered.length} / {fournisseurs.length}
         </span>
+        <button type="button" className="uploader-form-btn-sm" onClick={handleExport}>
+          Exporter CSV
+        </button>
       </div>
 
       <div className="panel">

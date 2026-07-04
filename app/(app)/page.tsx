@@ -14,14 +14,15 @@ function formatMoney(n: number | null) {
 }
 
 export default async function OverviewPage() {
+  const locale = await getLocale();
+
   try {
-    const [dossiers, vehicules, articles, fournisseurs, clients, locale] = await Promise.all([
+    const [dossiers, vehicules, articles, fournisseurs, clients] = await Promise.all([
       getDossiers(),
       getVehicules(),
       getArticles(),
       getFournisseurs(),
       getClients(),
-      getLocale(),
     ]);
 
     const actifs = dossiers.filter((d) => d.statut !== "Livré" && d.statut !== "Annulé");
@@ -143,7 +144,7 @@ export default async function OverviewPage() {
     return (
       <>
         <div className="page-header">
-          <h1>Vue d'ensemble</h1>
+          <h1>{t(locale, "overview_title")}</h1>
         </div>
         <NotionErrorPanel error={error} />
       </>

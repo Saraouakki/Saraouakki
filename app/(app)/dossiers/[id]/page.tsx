@@ -113,6 +113,14 @@ export default async function DossierDetailPage({
                   <div className="v">{dossier.bureauDouane || "—"}</div>
                 </div>
                 <div>
+                  <div className="k">Régime douanier</div>
+                  <div className="v">{dossier.regimeDouanier || "—"}</div>
+                </div>
+                <div>
+                  <div className="k">N° DUM (BADR)</div>
+                  <div className="v">{dossier.numeroDUM || "—"}</div>
+                </div>
+                <div>
                   <div className="k">Poids / Volume</div>
                   <div className="v">
                     {dossier.poids ?? "—"} kg · {dossier.volume ?? "—"} m³

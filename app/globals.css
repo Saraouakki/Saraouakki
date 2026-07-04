@@ -597,6 +597,30 @@ th.sortable:hover {
   }
 }
 
+/* --- RTL (arabe) ----------------------------------------------------------- */
+
+[dir="rtl"] .nav-close {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .login-links {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 860px) {
+  [dir="rtl"] .sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  [dir="rtl"] .nav-toggle-checkbox:checked ~ .sidebar {
+    transform: translateX(0);
+  }
+}
+
 /* --- Auth ---------------------------------------------------------------- */
 
 .login-shell {

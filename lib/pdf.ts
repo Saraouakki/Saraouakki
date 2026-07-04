@@ -93,6 +93,8 @@ export async function generateDossierPdf(
   row("ETA", dossier.eta ?? "—");
   row("Date de livraison", dossier.dateLivraison ?? "—");
   row("Bureau de douane", dossier.bureauDouane);
+  row("Régime douanier", dossier.regimeDouanier);
+  row("N° DUM (BADR)", dossier.numeroDUM);
 
   sectionHeader("Marchandise");
   row("Poids", dossier.poids != null ? `${dossier.poids} kg` : "—");

@@ -1,4 +1,4 @@
-export type Locale = "fr" | "en";
+export type Locale = "fr" | "en" | "ar";
 export const LOCALE_COOKIE = "ltp_locale";
 export const DEFAULT_LOCALE: Locale = "fr";
 
@@ -77,6 +77,43 @@ export const dictionaries = {
 
     lang_switch: "Language",
   },
+  ar: {
+    nav_overview: "نظرة عامة",
+    nav_dossiers: "الملفات",
+    nav_flotte: "الأسطول",
+    nav_entrepot: "المستودع",
+    nav_clients: "العملاء",
+    nav_fournisseurs: "الموردون",
+    nav_comptes: "الحسابات",
+    nav_audit: "سجل المراجعة",
+    nav_mon_espace: "مساحتي",
+    role_interne: "الفريق الداخلي",
+    role_client: "عميل",
+    role_fournisseur: "مورد",
+    logout: "تسجيل الخروج",
+
+    login_title: "اللوجستيك والعبور",
+    login_subtitle: "سجّل الدخول إلى مساحتك (فريق داخلي، عميل أو مورد).",
+    login_email: "البريد الإلكتروني",
+    login_password: "كلمة المرور",
+    login_submit: "تسجيل الدخول",
+    login_submit_pending: "جارٍ تسجيل الدخول...",
+    login_forgot: "نسيت كلمة المرور؟",
+    login_signup: "إنشاء حساب",
+
+    overview_title: "نظرة عامة",
+    overview_subtitle: "متابعة لحظية لعمليات العبور الجمركي والنقل والتخزين.",
+    stat_active_dossiers: "الملفات النشطة",
+    stat_customs: "قيد التخليص الجمركي",
+    stat_urgent: "أولوية عاجلة",
+    stat_value_in_transit: "القيمة أثناء النقل",
+    stat_vehicles_available: "المركبات المتاحة",
+    stat_stock_alerts: "تنبيهات المخزون",
+    stat_clients: "العملاء",
+    stat_fournisseurs: "الموردون",
+
+    lang_switch: "اللغة",
+  },
 } as const;
 
 export type TranslationKey = keyof (typeof dictionaries)["fr"];
@@ -86,5 +123,9 @@ export function t(locale: Locale, key: TranslationKey): string {
 }
 
 export function isLocale(value: string | undefined): value is Locale {
-  return value === "fr" || value === "en";
+  return value === "fr" || value === "en" || value === "ar";
+}
+
+export function direction(locale: Locale): "rtl" | "ltr" {
+  return locale === "ar" ? "rtl" : "ltr";
 }

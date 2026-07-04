@@ -205,7 +205,9 @@ function hydrateDossier(p: Page, maps: DossierMaps): Dossier {
     volume: getNumber(p, "Volume (m³)"),
     valeur: getNumber(p, "Valeur marchandise"),
     numero: getText(p, "N° conteneur/plaque"),
-    bureauDouane: getText(p, "Bureau de douane"),
+    bureauDouane: getSelect(p, "Bureau de douane"),
+    regimeDouanier: getSelect(p, "Régime douanier"),
+    numeroDUM: getText(p, "N° DUM (BADR)"),
     priorite: getSelect(p, "Priorité"),
   };
 }
@@ -325,6 +327,12 @@ export async function getUserEmailsForClient(clientId: string): Promise<string[]
     .map(toUserAccount)
     .filter((u) => u.statut === "Actif" && u.clientId === clientId && u.email)
     .map((u) => u.email);
+}
+
+export async function getClientPhoneNumbers(clientId: string): Promise<string[]> {
+  const clients = await getClients();
+  const client = clients.find((c) => c.id === clientId);
+  return client?.telephone ? [client.telephone] : [];
 }
 
 export async function getAuditLog(limit = 200): Promise<import("./types").AuditLogEntry[]> {

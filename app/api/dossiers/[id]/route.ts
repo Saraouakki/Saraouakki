@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { notion, DS, invalidateDataSource } from "@/lib/notion";
 import { DOSSIER_STATUTS } from "@/lib/types";
 import { getSession } from "@/lib/server-session";
-import { getDossier, getUserEmailsForClient } from "@/lib/data";
+import { getDossier, getUserEmailsForClient, getClientPhoneNumbers } from "@/lib/data";
 import { notifyDossierStatusChange } from "@/lib/notify";
 import { logAudit } from "@/lib/audit";
 import { canWrite } from "@/lib/access";
@@ -49,14 +49,16 @@ export async function PATCH(
       try {
         const dossier = await getDossier(id);
         if (!dossier || dossier.clientIds.length === 0) return;
-        const emails = (
-          await Promise.all(dossier.clientIds.map((cid) => getUserEmailsForClient(cid)))
-        ).flat();
-        if (emails.length === 0) return;
+        const [emails, phones] = await Promise.all([
+          Promise.all(dossier.clientIds.map((cid) => getUserEmailsForClient(cid))).then((r) => r.flat()),
+          Promise.all(dossier.clientIds.map((cid) => getClientPhoneNumbers(cid))).then((r) => r.flat()),
+        ]);
+        if (emails.length === 0 && phones.length === 0) return;
         await notifyDossierStatusChange({
           reference: dossier.reference,
           statut,
           clientEmails: emails,
+          clientPhones: phones,
           appUrl: process.env.APP_URL || "http://localhost:3000",
           dossierPath: `/dossiers/${id}`,
         });

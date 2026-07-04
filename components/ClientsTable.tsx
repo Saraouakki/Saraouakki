@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Client } from "@/lib/types";
+import { arrayToCsv, downloadCsv } from "@/lib/csv";
 
 export default function ClientsTable({ clients }: { clients: Client[] }) {
   const [query, setQuery] = useState("");
@@ -13,6 +14,14 @@ export default function ClientsTable({ clients }: { clients: Client[] }) {
       [c.nom, c.societe, c.email, c.pays, c.type].join(" ").toLowerCase().includes(q)
     );
   }, [clients, query]);
+
+  function handleExport() {
+    const csv = arrayToCsv(
+      ["Nom", "Société", "Type", "Email", "Téléphone", "Pays"],
+      filtered.map((c) => [c.nom, c.societe, c.type, c.email, c.telephone, c.pays])
+    );
+    downloadCsv(`clients-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  }
 
   return (
     <>
@@ -26,6 +35,9 @@ export default function ClientsTable({ clients }: { clients: Client[] }) {
         <span className="list-count">
           {filtered.length} / {clients.length}
         </span>
+        <button type="button" className="uploader-form-btn-sm" onClick={handleExport}>
+          Exporter CSV
+        </button>
       </div>
 
       <div className="panel">

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Badge from "./Badge";
 import type { Dossier } from "@/lib/types";
+import { arrayToCsv, downloadCsv } from "@/lib/csv";
 
 type SortKey = "reference" | "eta" | "statut" | "priorite";
 
@@ -67,6 +68,50 @@ export default function DossiersTable({
     return sortDir === 1 ? " ▲" : " ▼";
   }
 
+  function handleExport() {
+    const csv = arrayToCsv(
+      [
+        "Référence",
+        "Client",
+        "Type",
+        "Mode",
+        "Statut",
+        "Transporteur",
+        "Fournisseur",
+        "Origine",
+        "Destination",
+        "ETA",
+        "Priorité",
+        "Bureau de douane",
+        "Régime douanier",
+        "N° DUM (BADR)",
+        "Poids (kg)",
+        "Volume (m³)",
+        "Valeur marchandise",
+      ],
+      filtered.map((d) => [
+        d.reference,
+        d.clientNoms.join("; "),
+        d.type,
+        d.mode,
+        d.statut,
+        d.transporteurNoms.join("; "),
+        d.fournisseurNoms.join("; "),
+        d.origine,
+        d.destination,
+        d.eta,
+        d.priorite,
+        d.bureauDouane,
+        d.regimeDouanier,
+        d.numeroDUM,
+        d.poids,
+        d.volume,
+        d.valeur,
+      ])
+    );
+    downloadCsv(`dossiers-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  }
+
   return (
     <>
       <div className="list-toolbar">
@@ -86,10 +131,23 @@ export default function DossiersTable({
         <span className="list-count">
           {filtered.length} / {dossiers.length}
         </span>
+        <button
+          type="button"
+          className="uploader-form-btn-sm"
+          style={{ marginInlineStart: canCreate ? 0 : "auto" }}
+          onClick={handleExport}
+        >
+          Exporter CSV
+        </button>
         {canCreate && (
-          <Link href="/dossiers/nouveau" className="uploader-form-btn-sm" style={{ marginLeft: "auto" }}>
-            + Nouveau dossier
-          </Link>
+          <>
+            <Link href="/dossiers/import" className="uploader-form-btn-sm">
+              Importer CSV
+            </Link>
+            <Link href="/dossiers/nouveau" className="uploader-form-btn-sm">
+              + Nouveau dossier
+            </Link>
+          </>
         )}
       </div>
 

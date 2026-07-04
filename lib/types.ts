@@ -134,8 +134,32 @@ export interface Dossier {
   valeur: number | null;
   numero: string;
   bureauDouane: string;
+  regimeDouanier: string;
+  numeroDUM: string;
   priorite: string;
 }
+
+export const BUREAU_DOUANE_OPTIONS = [
+  "Casablanca Port",
+  "Casablanca Aéroport Mohammed V",
+  "Tanger Med",
+  "Tanger Ville",
+  "Nador",
+  "Agadir Port",
+  "Oujda",
+  "Marrakech Aéroport",
+  "Fès",
+  "Autre",
+] as const;
+
+export const REGIME_DOUANIER_OPTIONS = [
+  "Mise à la consommation",
+  "Admission temporaire",
+  "Transit (T1)",
+  "Entrepôt sous douane",
+  "Exportation définitive",
+  "Réexportation",
+] as const;
 
 export interface DocumentItem {
   id: string;

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Badge from "./Badge";
 import type { Article } from "@/lib/types";
+import { arrayToCsv, downloadCsv } from "@/lib/csv";
 
 export default function ArticlesTable({ articles }: { articles: Article[] }) {
   const [query, setQuery] = useState("");
@@ -21,6 +22,23 @@ export default function ArticlesTable({ articles }: { articles: Article[] }) {
     });
   }, [articles, query, onlyAlerts]);
 
+  function handleExport() {
+    const csv = arrayToCsv(
+      ["Article", "SKU", "Catégorie", "Quantité", "Seuil", "Entrepôt", "Fournisseur", "Prix unitaire"],
+      filtered.map((a) => [
+        a.nom,
+        a.sku,
+        a.categorie,
+        a.quantite,
+        a.seuil,
+        a.entrepotNoms.join("; "),
+        a.fournisseurNoms.join("; "),
+        a.prixUnitaire,
+      ])
+    );
+    downloadCsv(`articles-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  }
+
   return (
     <>
       <div className="list-toolbar">
@@ -37,6 +55,9 @@ export default function ArticlesTable({ articles }: { articles: Article[] }) {
         <span className="list-count">
           {filtered.length} / {articles.length}
         </span>
+        <button type="button" className="uploader-form-btn-sm" onClick={handleExport}>
+          Exporter CSV
+        </button>
       </div>
 
       <div className="panel">
