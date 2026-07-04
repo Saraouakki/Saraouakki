@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
-const INTERNAL_ONLY_PREFIXES = ["/flotte", "/entrepot", "/clients", "/fournisseurs"];
+const INTERNAL_ONLY_PREFIXES = [
+  "/flotte",
+  "/entrepot",
+  "/clients",
+  "/fournisseurs",
+  "/comptes",
+  "/audit",
+];
+
+const PUBLIC_PREFIXES = ["/login", "/signup", "/forgot-password", "/reset-password", "/api/auth"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
+  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 

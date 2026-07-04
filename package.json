@@ -7,22 +7,30 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "tsx scripts/seed-notion.ts"
+    "seed": "tsx scripts/seed-notion.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@notionhq/client": "^5.22.0",
+    "@sentry/node": "^10.63.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.3",
     "next": "^15.1.6",
+    "nodemailer": "^9.0.3",
+    "pdf-lib": "^1.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.7",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.9"
   }
 }

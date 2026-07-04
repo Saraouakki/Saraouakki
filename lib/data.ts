@@ -2,6 +2,7 @@ import {
   DS,
   Page,
   queryAll,
+  queryFiltered,
   getTitle,
   getText,
   getSelect,
@@ -152,57 +153,96 @@ export async function getArticles(): Promise<Article[]> {
   }));
 }
 
-export async function getDossiers(): Promise<Dossier[]> {
-  const [pages, clients, transporteurs, vehicules, chauffeurs, entrepots, fournisseurs] =
-    await Promise.all([
-      queryAll(DS.dossiers),
-      queryAll(DS.clients),
-      queryAll(DS.transporteurs),
-      queryAll(DS.vehicules),
-      queryAll(DS.chauffeurs),
-      queryAll(DS.entrepots),
-      queryAll(DS.fournisseurs),
-    ]);
-  const cMap = nameMap(clients, "Nom");
-  const tMap = nameMap(transporteurs, "Nom");
-  const vMap = nameMap(vehicules, "Immatriculation");
-  const chMap = nameMap(chauffeurs, "Nom");
-  const eMap = nameMap(entrepots, "Nom");
-  const fMap = nameMap(fournisseurs, "Nom");
+interface DossierMaps {
+  cMap: Map<string, string>;
+  tMap: Map<string, string>;
+  vMap: Map<string, string>;
+  chMap: Map<string, string>;
+  eMap: Map<string, string>;
+  fMap: Map<string, string>;
+}
 
-  return pages
-    .map((p) => ({
-      id: p.id,
-      reference: getTitle(p, "Référence"),
-      clientIds: getRelationIds(p, "Client"),
-      clientNoms: resolveNames(getRelationIds(p, "Client"), cMap),
-      type: getSelect(p, "Type"),
-      mode: getSelect(p, "Mode"),
-      statut: getSelect(p, "Statut"),
-      transporteurNoms: resolveNames(getRelationIds(p, "Transporteur"), tMap),
-      vehiculeNoms: resolveNames(getRelationIds(p, "Véhicule"), vMap),
-      chauffeurNoms: resolveNames(getRelationIds(p, "Chauffeur"), chMap),
-      entrepotNoms: resolveNames(getRelationIds(p, "Entrepôt"), eMap),
-      fournisseurIds: getRelationIds(p, "Fournisseur"),
-      fournisseurNoms: resolveNames(getRelationIds(p, "Fournisseur"), fMap),
-      origine: getText(p, "Origine"),
-      destination: getText(p, "Destination"),
-      dateDepart: getDate(p, "Date de départ"),
-      eta: getDate(p, "ETA"),
-      dateLivraison: getDate(p, "Date de livraison"),
-      poids: getNumber(p, "Poids (kg)"),
-      volume: getNumber(p, "Volume (m³)"),
-      valeur: getNumber(p, "Valeur marchandise"),
-      numero: getText(p, "N° conteneur/plaque"),
-      bureauDouane: getText(p, "Bureau de douane"),
-      priorite: getSelect(p, "Priorité"),
-    }))
-    .sort((a, b) => b.reference.localeCompare(a.reference));
+async function buildDossierMaps(): Promise<DossierMaps> {
+  const [clients, transporteurs, vehicules, chauffeurs, entrepots, fournisseurs] = await Promise.all([
+    queryAll(DS.clients),
+    queryAll(DS.transporteurs),
+    queryAll(DS.vehicules),
+    queryAll(DS.chauffeurs),
+    queryAll(DS.entrepots),
+    queryAll(DS.fournisseurs),
+  ]);
+  return {
+    cMap: nameMap(clients, "Nom"),
+    tMap: nameMap(transporteurs, "Nom"),
+    vMap: nameMap(vehicules, "Immatriculation"),
+    chMap: nameMap(chauffeurs, "Nom"),
+    eMap: nameMap(entrepots, "Nom"),
+    fMap: nameMap(fournisseurs, "Nom"),
+  };
+}
+
+function hydrateDossier(p: Page, maps: DossierMaps): Dossier {
+  return {
+    id: p.id,
+    reference: getTitle(p, "Référence"),
+    clientIds: getRelationIds(p, "Client"),
+    clientNoms: resolveNames(getRelationIds(p, "Client"), maps.cMap),
+    type: getSelect(p, "Type"),
+    mode: getSelect(p, "Mode"),
+    statut: getSelect(p, "Statut"),
+    transporteurNoms: resolveNames(getRelationIds(p, "Transporteur"), maps.tMap),
+    vehiculeNoms: resolveNames(getRelationIds(p, "Véhicule"), maps.vMap),
+    chauffeurNoms: resolveNames(getRelationIds(p, "Chauffeur"), maps.chMap),
+    entrepotNoms: resolveNames(getRelationIds(p, "Entrepôt"), maps.eMap),
+    fournisseurIds: getRelationIds(p, "Fournisseur"),
+    fournisseurNoms: resolveNames(getRelationIds(p, "Fournisseur"), maps.fMap),
+    origine: getText(p, "Origine"),
+    destination: getText(p, "Destination"),
+    dateDepart: getDate(p, "Date de départ"),
+    eta: getDate(p, "ETA"),
+    dateLivraison: getDate(p, "Date de livraison"),
+    poids: getNumber(p, "Poids (kg)"),
+    volume: getNumber(p, "Volume (m³)"),
+    valeur: getNumber(p, "Valeur marchandise"),
+    numero: getText(p, "N° conteneur/plaque"),
+    bureauDouane: getText(p, "Bureau de douane"),
+    priorite: getSelect(p, "Priorité"),
+  };
+}
+
+function sortByReferenceDesc(dossiers: Dossier[]): Dossier[] {
+  return [...dossiers].sort((a, b) => b.reference.localeCompare(a.reference));
+}
+
+export async function getDossiers(): Promise<Dossier[]> {
+  const [pages, maps] = await Promise.all([queryAll(DS.dossiers), buildDossierMaps()]);
+  return sortByReferenceDesc(pages.map((p) => hydrateDossier(p, maps)));
 }
 
 export async function getDossier(id: string): Promise<Dossier | undefined> {
   const dossiers = await getDossiers();
   return dossiers.find((d) => d.id === id);
+}
+
+/**
+ * Variantes filtrées côté Notion, pour les portails client/fournisseur : au lieu de
+ * rapatrier tous les dossiers puis filtrer en mémoire, on ne demande à l'API Notion
+ * que les dossiers liés à ce client/fournisseur. Utile quand la base Dossiers grossit.
+ */
+export async function getDossiersForClient(clientId: string): Promise<Dossier[]> {
+  const [pages, maps] = await Promise.all([
+    queryFiltered(DS.dossiers, { property: "Client", relation: { contains: clientId } }),
+    buildDossierMaps(),
+  ]);
+  return sortByReferenceDesc(pages.map((p) => hydrateDossier(p, maps)));
+}
+
+export async function getDossiersForFournisseur(fournisseurId: string): Promise<Dossier[]> {
+  const [pages, maps] = await Promise.all([
+    queryFiltered(DS.dossiers, { property: "Fournisseur", relation: { contains: fournisseurId } }),
+    buildDossierMaps(),
+  ]);
+  return sortByReferenceDesc(pages.map((p) => hydrateDossier(p, maps)));
 }
 
 export async function getDocuments(): Promise<DocumentItem[]> {
@@ -245,14 +285,18 @@ export async function getMouvements(): Promise<Mouvement[]> {
 function toUserAccount(p: Page): UserAccount {
   const clientIds = getRelationIds(p, "Client");
   const fournisseurIds = getRelationIds(p, "Fournisseur");
+  const permission = getSelect(p, "Permission interne");
   return {
     id: p.id,
     nom: getTitle(p, "Nom"),
     email: getEmail(p, "Email"),
     role: (getSelect(p, "Rôle") || "Client") as UserAccount["role"],
+    permissionInterne: (permission || null) as UserAccount["permissionInterne"],
     clientId: clientIds[0] ?? null,
     fournisseurId: fournisseurIds[0] ?? null,
     passwordHash: getText(p, "Mot de passe (hash)"),
+    resetTokenHash: getText(p, "Jeton reset (hash)"),
+    resetExpires: getDate(p, "Expiration reset"),
     statut: getSelect(p, "Statut"),
   };
 }
@@ -263,6 +307,39 @@ export async function getUserByEmail(email: string): Promise<UserAccount | undef
   return pages
     .map(toUserAccount)
     .find((u) => u.email.trim().toLowerCase() === normalized);
+}
+
+export async function getUserById(id: string): Promise<UserAccount | undefined> {
+  const pages = await queryAll(DS.utilisateurs);
+  return pages.map(toUserAccount).find((u) => u.id === id);
+}
+
+export async function getPendingAccounts(): Promise<UserAccount[]> {
+  const pages = await queryAll(DS.utilisateurs);
+  return pages.map(toUserAccount).filter((u) => u.statut === "En attente");
+}
+
+export async function getUserEmailsForClient(clientId: string): Promise<string[]> {
+  const pages = await queryAll(DS.utilisateurs);
+  return pages
+    .map(toUserAccount)
+    .filter((u) => u.statut === "Actif" && u.clientId === clientId && u.email)
+    .map((u) => u.email);
+}
+
+export async function getAuditLog(limit = 200): Promise<import("./types").AuditLogEntry[]> {
+  const pages = await queryAll(DS.audit);
+  return pages
+    .map((p) => ({
+      id: p.id,
+      titre: getTitle(p, "Titre"),
+      action: getSelect(p, "Action"),
+      utilisateur: getText(p, "Utilisateur"),
+      detail: getText(p, "Détail"),
+      date: getDate(p, "Date"),
+    }))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
+    .slice(0, limit);
 }
 
 export async function getEtapes(): Promise<Etape[]> {

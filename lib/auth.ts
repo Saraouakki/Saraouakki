@@ -19,6 +19,7 @@ export async function verifyCredentials(
     nom: user.nom,
     email: user.email,
     role: user.role,
+    permissionInterne: user.permissionInterne,
     clientId: user.clientId,
     fournisseurId: user.fournisseurId,
   };

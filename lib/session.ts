@@ -28,6 +28,7 @@ export async function verifySessionToken(token: string): Promise<SessionData | n
       nom: payload.nom as string,
       email: payload.email as string,
       role: payload.role as SessionData["role"],
+      permissionInterne: (payload.permissionInterne as SessionData["permissionInterne"]) ?? null,
       clientId: (payload.clientId as string | null) ?? null,
       fournisseurId: (payload.fournisseurId as string | null) ?? null,
     };

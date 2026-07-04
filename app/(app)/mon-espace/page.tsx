@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/server-session";
-import { getDossiers, getArticles, getMouvements } from "@/lib/data";
+import { getDossiersForClient, getDossiersForFournisseur, getArticles, getMouvements } from "@/lib/data";
 import Badge from "@/components/Badge";
 import StatCard from "@/components/StatCard";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
@@ -18,9 +18,7 @@ export default async function MonEspacePage() {
 
   try {
     if (session.role === "Client") {
-      const dossiers = (await getDossiers()).filter(
-        (d) => session.clientId != null && d.clientIds.includes(session.clientId)
-      );
+      const dossiers = session.clientId ? await getDossiersForClient(session.clientId) : [];
       const actifs = dossiers.filter((d) => d.statut !== "Livré" && d.statut !== "Annulé");
       const valeurActive = actifs.reduce((sum, d) => sum + (d.valeur ?? 0), 0);
 
@@ -87,20 +85,14 @@ export default async function MonEspacePage() {
     }
 
     if (session.role === "Fournisseur") {
-      const [dossiers, articles, mouvements] = await Promise.all([
-        getDossiers(),
+      const fid = session.fournisseurId;
+      const [mesDossiers, articles, mouvements] = await Promise.all([
+        fid ? getDossiersForFournisseur(fid) : Promise.resolve([]),
         getArticles(),
         getMouvements(),
       ]);
-      const mesDossiers = dossiers.filter(
-        (d) => session.fournisseurId != null && d.fournisseurIds.includes(session.fournisseurId)
-      );
-      const mesArticles = articles.filter(
-        (a) => session.fournisseurId != null && a.fournisseurIds.includes(session.fournisseurId)
-      );
-      const mesMouvements = mouvements.filter(
-        (m) => session.fournisseurId != null && m.fournisseurIds.includes(session.fournisseurId)
-      );
+      const mesArticles = articles.filter((a) => fid != null && a.fournisseurIds.includes(fid));
+      const mesMouvements = mouvements.filter((m) => fid != null && m.fournisseurIds.includes(fid));
 
       return (
         <>

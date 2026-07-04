@@ -2,9 +2,19 @@ import { Client } from "@notionhq/client";
 import type {
   PageObjectResponse,
   PartialPageObjectResponse,
+  QueryDataSourceParameters,
 } from "@notionhq/client/build/src/api-endpoints";
+import { getCached, setCached, invalidateCache } from "./cache";
 
 export const notion = new Client({ auth: process.env.NOTION_TOKEN });
+
+// Durée de vie du cache en mémoire pour les lectures Notion. Réduit le nombre
+// d'appels à l'API Notion (limitée à ~3 req/s) quand plusieurs pages sont
+// rendues coup sur coup. Ce cache vit dans le processus du serveur : il aide
+// sur une instance "chaude" mais n'est pas partagé entre plusieurs instances
+// (pas de problème de cohérence grave ici, les données ne sont pas critiques
+// à la seconde près, et chaque écriture invalide sa base explicitement).
+const CACHE_TTL_MS = Number(process.env.CACHE_TTL_MS ?? 20_000);
 
 export const DS = {
   clients: required("NOTION_DS_CLIENTS"),
@@ -19,6 +29,7 @@ export const DS = {
   etapes: required("NOTION_DS_ETAPES"),
   fournisseurs: required("NOTION_DS_FOURNISSEURS"),
   utilisateurs: required("NOTION_DS_UTILISATEURS"),
+  audit: required("NOTION_DS_AUDIT"),
 };
 
 function required(key: string): string {
@@ -31,7 +42,10 @@ function required(key: string): string {
 
 export type Page = PageObjectResponse;
 
-export async function queryAll(dataSourceId: string): Promise<Page[]> {
+async function queryAllFresh(
+  dataSourceId: string,
+  filter?: QueryDataSourceParameters["filter"]
+): Promise<Page[]> {
   const pages: Page[] = [];
   let cursor: string | undefined;
   do {
@@ -39,6 +53,7 @@ export async function queryAll(dataSourceId: string): Promise<Page[]> {
       data_source_id: dataSourceId,
       start_cursor: cursor,
       page_size: 100,
+      ...(filter ? { filter } : {}),
     });
     for (const r of res.results as (PageObjectResponse | PartialPageObjectResponse)[]) {
       if ("properties" in r) pages.push(r as PageObjectResponse);
@@ -46,6 +61,33 @@ export async function queryAll(dataSourceId: string): Promise<Page[]> {
     cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined;
   } while (cursor);
   return pages;
+}
+
+/** Lit toutes les pages d'une data source, avec un cache en mémoire de courte durée. */
+export async function queryAll(dataSourceId: string): Promise<Page[]> {
+  const cacheKey = `ds:${dataSourceId}`;
+  const cached = getCached<Page[]>(cacheKey);
+  if (cached) return cached;
+  const pages = await queryAllFresh(dataSourceId);
+  setCached(cacheKey, pages, CACHE_TTL_MS);
+  return pages;
+}
+
+/**
+ * Variante filtrée côté API Notion (utilisée pour les portails client/fournisseur) :
+ * évite de rapatrier l'intégralité de la base Dossiers quand elle grossit. Non mise
+ * en cache car le filtre varie par utilisateur — l'intérêt est déjà dans la réduction
+ * du volume transféré et le respect du taux de requêtes Notion.
+ */
+export async function queryFiltered(
+  dataSourceId: string,
+  filter: NonNullable<QueryDataSourceParameters["filter"]>
+): Promise<Page[]> {
+  return queryAllFresh(dataSourceId, filter);
+}
+
+export function invalidateDataSource(dataSourceId: string): void {
+  invalidateCache(`ds:${dataSourceId}`);
 }
 
 // --- Property extraction helpers -------------------------------------------------

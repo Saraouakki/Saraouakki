@@ -1,13 +1,14 @@
-import Link from "next/link";
 import { getDossiers } from "@/lib/data";
-import Badge from "@/components/Badge";
+import { getSession } from "@/lib/server-session";
+import { canWrite } from "@/lib/access";
+import DossiersTable from "@/components/DossiersTable";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
 
 export const dynamic = "force-dynamic";
 
 export default async function DossiersPage() {
   try {
-    const dossiers = await getDossiers();
+    const [dossiers, session] = await Promise.all([getDossiers(), getSession()]);
 
     return (
       <>
@@ -16,57 +17,7 @@ export default async function DossiersPage() {
           <p>Transit douanier, freight et transport — {dossiers.length} dossier(s).</p>
         </div>
 
-        <div className="panel">
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Référence</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Mode</th>
-                  <th>Statut</th>
-                  <th>Transporteur</th>
-                  <th>Fournisseur</th>
-                  <th>Trajet</th>
-                  <th>ETA</th>
-                  <th>Priorité</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dossiers.map((d) => (
-                  <tr key={d.id}>
-                    <td>
-                      <Link href={`/dossiers/${d.id}`} className="link-primary">
-                        {d.reference}
-                      </Link>
-                    </td>
-                    <td>{d.clientNoms.join(", ") || "—"}</td>
-                    <td>{d.type}</td>
-                    <td>{d.mode}</td>
-                    <td>
-                      <Badge label={d.statut} />
-                    </td>
-                    <td>{d.transporteurNoms.join(", ") || "—"}</td>
-                    <td>{d.fournisseurNoms.join(", ") || "—"}</td>
-                    <td>
-                      {d.origine || "—"} → {d.destination || "—"}
-                    </td>
-                    <td>{d.eta ?? "—"}</td>
-                    <td>{d.priorite === "Urgente" ? <Badge label="Urgente" /> : "Normale"}</td>
-                  </tr>
-                ))}
-                {dossiers.length === 0 && (
-                  <tr>
-                    <td colSpan={10} className="empty-state">
-                      Aucun dossier pour le moment.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DossiersTable dossiers={dossiers} canCreate={canWrite(session)} />
       </>
     );
   } catch (error) {

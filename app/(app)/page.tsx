@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getDossiers, getVehicules, getArticles, getFournisseurs, getClients } from "@/lib/data";
+import { getLocale } from "@/lib/server-i18n";
+import { t } from "@/lib/i18n";
 import StatCard from "@/components/StatCard";
 import Badge from "@/components/Badge";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
@@ -13,12 +15,13 @@ function formatMoney(n: number | null) {
 
 export default async function OverviewPage() {
   try {
-    const [dossiers, vehicules, articles, fournisseurs, clients] = await Promise.all([
+    const [dossiers, vehicules, articles, fournisseurs, clients, locale] = await Promise.all([
       getDossiers(),
       getVehicules(),
       getArticles(),
       getFournisseurs(),
       getClients(),
+      getLocale(),
     ]);
 
     const actifs = dossiers.filter((d) => d.statut !== "Livré" && d.statut !== "Annulé");
@@ -35,22 +38,30 @@ export default async function OverviewPage() {
     return (
       <>
         <div className="page-header">
-          <h1>Vue d'ensemble</h1>
-          <p>Suivi en temps réel des opérations de transit, transport et entreposage.</p>
+          <h1>{t(locale, "overview_title")}</h1>
+          <p>{t(locale, "overview_subtitle")}</p>
         </div>
 
         <div className="stat-grid">
-          <StatCard label="Dossiers actifs" value={actifs.length} sub={`${dossiers.length} au total`} />
-          <StatCard label="En dédouanement" value={enDouane.length} />
-          <StatCard label="Priorité urgente" value={urgents.length} />
-          <StatCard label="Valeur en transit" value={formatMoney(valeurActive)} />
           <StatCard
-            label="Véhicules disponibles"
+            label={t(locale, "stat_active_dossiers")}
+            value={actifs.length}
+            sub={`${dossiers.length} au total`}
+          />
+          <StatCard label={t(locale, "stat_customs")} value={enDouane.length} />
+          <StatCard label={t(locale, "stat_urgent")} value={urgents.length} />
+          <StatCard label={t(locale, "stat_value_in_transit")} value={formatMoney(valeurActive)} />
+          <StatCard
+            label={t(locale, "stat_vehicles_available")}
             value={`${vehiculesDispos}/${vehicules.length}`}
           />
-          <StatCard label="Alertes stock" value={articlesSousSeuil.length} sub="sous seuil de réappro" />
-          <StatCard label="Clients" value={clients.length} />
-          <StatCard label="Fournisseurs" value={fournisseurs.length} />
+          <StatCard
+            label={t(locale, "stat_stock_alerts")}
+            value={articlesSousSeuil.length}
+            sub="sous seuil de réappro"
+          />
+          <StatCard label={t(locale, "stat_clients")} value={clients.length} />
+          <StatCard label={t(locale, "stat_fournisseurs")} value={fournisseurs.length} />
         </div>
 
         <div className="grid-2">

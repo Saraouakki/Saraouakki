@@ -1,6 +1,6 @@
 import { getEntrepots, getArticles, getMouvements } from "@/lib/data";
-import Badge from "@/components/Badge";
 import StatCard from "@/components/StatCard";
+import ArticlesTable from "@/components/ArticlesTable";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
 
 export const dynamic = "force-dynamic";
@@ -71,51 +71,10 @@ export default async function EntrepotPage() {
           </div>
         </div>
 
-        <div className="panel">
-          <div className="panel-header">
-            <h2>Articles en stock</h2>
-          </div>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Article</th>
-                  <th>SKU</th>
-                  <th>Catégorie</th>
-                  <th>Quantité</th>
-                  <th>Seuil</th>
-                  <th>Entrepôt</th>
-                  <th>Fournisseur</th>
-                  <th>Prix unitaire</th>
-                </tr>
-              </thead>
-              <tbody>
-                {articles.map((a) => {
-                  const alerte = a.quantite != null && a.seuil != null && a.quantite <= a.seuil;
-                  return (
-                    <tr key={a.id}>
-                      <td>{a.nom}</td>
-                      <td>{a.sku || "—"}</td>
-                      <td>{a.categorie || "—"}</td>
-                      <td>{alerte ? <Badge label="À fournir" /> : a.quantite ?? "—"}</td>
-                      <td>{a.seuil ?? "—"}</td>
-                      <td>{a.entrepotNoms.join(", ") || "—"}</td>
-                      <td>{a.fournisseurNoms.join(", ") || "—"}</td>
-                      <td>{a.prixUnitaire != null ? `${a.prixUnitaire} $` : "—"}</td>
-                    </tr>
-                  );
-                })}
-                {articles.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="empty-state">
-                      Aucun article en stock.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        <div className="page-header" style={{ marginBottom: 8 }}>
+          <p style={{ fontWeight: 600, color: "var(--text)", fontSize: 15 }}>Articles en stock</p>
         </div>
+        <ArticlesTable articles={articles} />
 
         <div className="panel">
           <div className="panel-header">

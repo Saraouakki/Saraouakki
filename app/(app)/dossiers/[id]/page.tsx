@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDossier, getEtapes, getDocuments } from "@/lib/data";
 import { getSession } from "@/lib/server-session";
+import { canAccessDossier, canWrite } from "@/lib/access";
 import Badge from "@/components/Badge";
 import StatusUpdater from "@/components/StatusUpdater";
+import DocumentUploader from "@/components/DocumentUploader";
 import NotionErrorPanel from "@/components/NotionErrorPanel";
 
 export const dynamic = "force-dynamic";
@@ -31,15 +33,7 @@ export default async function DossierDetailPage({
     ]);
 
     if (!dossier) notFound();
-
-    const isOwner =
-      session.role === "Interne" ||
-      (session.role === "Client" && !!session.clientId && dossier.clientIds.includes(session.clientId)) ||
-      (session.role === "Fournisseur" &&
-        !!session.fournisseurId &&
-        dossier.fournisseurIds.includes(session.fournisseurId));
-
-    if (!isOwner) notFound();
+    if (!canAccessDossier(session, dossier)) notFound();
 
     const etapesDossier = etapes.filter((e) => e.dossierIds.includes(id));
     const documentsDossier = documents.filter((doc) => doc.dossierIds.includes(id));
@@ -55,6 +49,10 @@ export default async function DossierDetailPage({
           <h1>{dossier.reference}</h1>
           <p>
             {dossier.type} · {dossier.mode} · {dossier.clientNoms.join(", ") || "Client non renseigné"}
+            {" · "}
+            <a href={`/api/dossiers/${dossier.id}/pdf`} className="link-primary">
+              Télécharger en PDF
+            </a>
           </p>
         </div>
 
@@ -142,6 +140,7 @@ export default async function DossierDetailPage({
                         <th>Type</th>
                         <th>Statut</th>
                         <th>Reçu le</th>
+                        <th>Fichier</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -153,17 +152,29 @@ export default async function DossierDetailPage({
                             <Badge label={doc.statut} />
                           </td>
                           <td>{doc.dateReception ?? "—"}</td>
+                          <td>
+                            {doc.fichiers[0] ? (
+                              <a href={doc.fichiers[0]} target="_blank" rel="noreferrer" className="link-primary">
+                                Ouvrir
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               )}
+              <div style={{ padding: "0 20px 20px" }}>
+                <DocumentUploader dossierId={dossier.id} />
+              </div>
             </div>
           </div>
 
           <div>
-            {session.role === "Interne" && (
+            {canWrite(session) && (
               <div className="panel">
                 <div className="panel-header">
                   <h2>Changer le statut</h2>

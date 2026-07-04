@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-export default function LogoutButton() {
+export default function LogoutButton({ label = "Déconnexion" }: { label?: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -17,7 +17,7 @@ export default function LogoutButton() {
 
   return (
     <button className="logout-btn" onClick={handleLogout} disabled={pending}>
-      {pending ? "..." : "Déconnexion"}
+      {pending ? "..." : label}
     </button>
   );
 }

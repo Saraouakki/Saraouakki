@@ -33,15 +33,19 @@ export interface Fournisseur {
 }
 
 export type Role = "Interne" | "Client" | "Fournisseur";
+export type InternalPermission = "Admin" | "Lecture seule";
 
 export interface UserAccount {
   id: string;
   nom: string;
   email: string;
   role: Role;
+  permissionInterne: InternalPermission | null;
   clientId: string | null;
   fournisseurId: string | null;
   passwordHash: string;
+  resetTokenHash: string;
+  resetExpires: string | null;
   statut: string;
 }
 
@@ -50,8 +54,18 @@ export interface SessionData {
   nom: string;
   email: string;
   role: Role;
+  permissionInterne: InternalPermission | null;
   clientId: string | null;
   fournisseurId: string | null;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  titre: string;
+  action: string;
+  utilisateur: string;
+  detail: string;
+  date: string | null;
 }
 
 export interface Entrepot {
@@ -156,6 +170,16 @@ export interface Etape {
   commentaire: string;
 }
 
+export const DOCUMENT_TYPES = [
+  "CMR",
+  "Facture commerciale",
+  "Déclaration T1",
+  "Connaissement (B/L)",
+  "Certificat origine",
+  "Liste de colisage",
+  "Autre",
+] as const;
+
 export const DOSSIER_STATUTS = [
   "Créé",
   "Enlèvement",
@@ -185,4 +209,16 @@ export const STATUT_COLORS: Record<string, string> = {
   "À fournir": "red",
   "Reçu": "yellow",
   "Validé": "green",
+  "Actif": "green",
+  "Inactif": "gray",
+  "En attente": "orange",
+  "Connexion": "green",
+  "Échec connexion": "red",
+  "Compte créé": "blue",
+  "Compte activé": "green",
+  "Compte refusé": "red",
+  "Mot de passe réinitialisé": "purple",
+  "Dossier créé": "blue",
+  "Statut modifié": "orange",
+  "Document ajouté": "blue",
 };
