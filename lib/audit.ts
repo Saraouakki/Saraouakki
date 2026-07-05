@@ -9,7 +9,9 @@ export type AuditAction =
   | "Mot de passe réinitialisé"
   | "Dossier créé"
   | "Statut modifié"
-  | "Document ajouté";
+  | "Document ajouté"
+  | "Grille tarifaire créée"
+  | "Demande de devis reçue";
 
 interface AuditEntry {
   action: AuditAction;

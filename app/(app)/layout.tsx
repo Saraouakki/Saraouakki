@@ -19,6 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     { href: "/entrepot", label: t(locale, "nav_entrepot"), icon: "🏭" },
     { href: "/clients", label: t(locale, "nav_clients"), icon: "🤝" },
     { href: "/fournisseurs", label: t(locale, "nav_fournisseurs"), icon: "🏗️" },
+    { href: "/tarifs", label: t(locale, "nav_tarifs"), icon: "💱" },
     { href: "/comptes", label: t(locale, "nav_comptes"), icon: "👤" },
     { href: "/audit", label: t(locale, "nav_audit"), icon: "🕓" },
   ];

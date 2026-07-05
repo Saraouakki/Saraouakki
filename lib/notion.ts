@@ -30,6 +30,8 @@ export const DS = {
   fournisseurs: required("NOTION_DS_FOURNISSEURS"),
   utilisateurs: required("NOTION_DS_UTILISATEURS"),
   audit: required("NOTION_DS_AUDIT"),
+  tarifs: required("NOTION_DS_TARIFS"),
+  demandesDevis: required("NOTION_DS_DEMANDES_DEVIS"),
 };
 
 function required(key: string): string {
@@ -106,6 +108,12 @@ export function getText(page: Page, name: string): string {
   const p = prop(page, name);
   if (p?.type !== "rich_text") return "";
   return p.rich_text.map((t) => t.plain_text).join("");
+}
+
+export function getCheckbox(page: Page, name: string): boolean {
+  const p = prop(page, name);
+  if (p?.type !== "checkbox") return false;
+  return p.checkbox;
 }
 
 export function getSelect(page: Page, name: string): string {

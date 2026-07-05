@@ -1,3 +1,35 @@
+export interface Tarif {
+  id: string;
+  nom: string;
+  mode: string;
+  origine: string;
+  destination: string;
+  prixParKg: number | null;
+  prixParCbm: number | null;
+  poidsMinFacturable: number | null;
+  devisMinimum: number | null;
+  devise: string;
+  delaiJours: number | null;
+  actif: boolean;
+}
+
+export interface DemandeDevis {
+  id: string;
+  nom: string;
+  email: string;
+  telephone: string;
+  societe: string;
+  mode: string;
+  origine: string;
+  destination: string;
+  poids: number | null;
+  volume: number | null;
+  estimation: number | null;
+  message: string;
+  statut: string;
+  date: string | null;
+}
+
 export interface Client {
   id: string;
   nom: string;
@@ -245,4 +277,8 @@ export const STATUT_COLORS: Record<string, string> = {
   "Dossier créé": "blue",
   "Statut modifié": "orange",
   "Document ajouté": "blue",
+  "Nouveau": "orange",
+  "Contacté": "blue",
+  "Converti": "green",
+  "Perdu": "gray",
 };

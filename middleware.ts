@@ -8,9 +8,18 @@ const INTERNAL_ONLY_PREFIXES = [
   "/fournisseurs",
   "/comptes",
   "/audit",
+  "/tarifs",
 ];
 
-const PUBLIC_PREFIXES = ["/login", "/signup", "/forgot-password", "/reset-password", "/api/auth"];
+const PUBLIC_PREFIXES = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/api/auth",
+  "/devis",
+  "/api/devis",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

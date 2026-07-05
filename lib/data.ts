@@ -12,8 +12,10 @@ import {
   getPhone,
   getRelationIds,
   getFileUrls,
+  getCheckbox,
   nameMap,
   resolveNames,
+  notion,
 } from "./notion";
 import type {
   Client,
@@ -28,6 +30,8 @@ import type {
   Etape,
   Fournisseur,
   UserAccount,
+  Tarif,
+  DemandeDevis,
 } from "./types";
 
 function toClient(p: Page): Client {
@@ -363,4 +367,85 @@ export async function getEtapes(): Promise<Etape[]> {
       commentaire: getText(p, "Commentaire"),
     }))
     .sort((a, b) => (a.dateHeure ?? "").localeCompare(b.dateHeure ?? ""));
+}
+
+function toTarif(p: Page): Tarif {
+  return {
+    id: p.id,
+    nom: getTitle(p, "Nom"),
+    mode: getSelect(p, "Mode"),
+    origine: getText(p, "Origine"),
+    destination: getText(p, "Destination"),
+    prixParKg: getNumber(p, "Prix par kg"),
+    prixParCbm: getNumber(p, "Prix par CBM"),
+    poidsMinFacturable: getNumber(p, "Poids min facturable (kg)"),
+    devisMinimum: getNumber(p, "Devis minimum"),
+    devise: getSelect(p, "Devise"),
+    delaiJours: getNumber(p, "Délai indicatif (jours)"),
+    actif: getCheckbox(p, "Actif"),
+  };
+}
+
+export async function getTarifs(): Promise<Tarif[]> {
+  return (await queryAll(DS.tarifs)).map(toTarif);
+}
+
+function toDemandeDevis(p: Page): DemandeDevis {
+  return {
+    id: p.id,
+    nom: getTitle(p, "Nom"),
+    email: getEmail(p, "Email"),
+    telephone: getPhone(p, "Téléphone"),
+    societe: getText(p, "Société"),
+    mode: getSelect(p, "Mode"),
+    origine: getText(p, "Origine"),
+    destination: getText(p, "Destination"),
+    poids: getNumber(p, "Poids (kg)"),
+    volume: getNumber(p, "Volume (CBM)"),
+    estimation: getNumber(p, "Estimation"),
+    message: getText(p, "Message"),
+    statut: getSelect(p, "Statut"),
+    date: getDate(p, "Date"),
+  };
+}
+
+export async function getDemandesDevis(): Promise<DemandeDevis[]> {
+  const pages = await queryAll(DS.demandesDevis);
+  return pages.map(toDemandeDevis).sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+interface CreateDemandeDevisInput {
+  nom: string;
+  email: string;
+  telephone: string;
+  societe: string;
+  mode: string;
+  origine: string;
+  destination: string;
+  poids: number | null;
+  volume: number | null;
+  estimation: number | null;
+  message: string;
+}
+
+export async function createDemandeDevis(input: CreateDemandeDevisInput): Promise<string> {
+  const page = await notion.pages.create({
+    parent: { data_source_id: DS.demandesDevis },
+    properties: {
+      Nom: { title: [{ text: { content: input.nom || `Devis ${input.origine} → ${input.destination}` } }] },
+      Email: { email: input.email || null },
+      Téléphone: { phone_number: input.telephone || null },
+      Société: { rich_text: input.societe ? [{ text: { content: input.societe } }] : [] },
+      Mode: { select: input.mode ? { name: input.mode } : null },
+      Origine: { rich_text: input.origine ? [{ text: { content: input.origine } }] : [] },
+      Destination: { rich_text: input.destination ? [{ text: { content: input.destination } }] : [] },
+      "Poids (kg)": { number: input.poids },
+      "Volume (CBM)": { number: input.volume },
+      Estimation: { number: input.estimation },
+      Message: { rich_text: input.message ? [{ text: { content: input.message } }] : [] },
+      Statut: { select: { name: "Nouveau" } },
+      Date: { date: { start: new Date().toISOString() } },
+    },
+  });
+  return page.id;
 }

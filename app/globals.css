@@ -597,6 +597,60 @@ th.sortable:hover {
   }
 }
 
+/* --- Simulateur de devis public -------------------------------------------- */
+
+.devis-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.devis-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.devis-subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .quote-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quote-amount {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.quote-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+}
+
+.quote-disclaimer {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 12px 0 16px;
+}
+
 /* --- RTL (arabe) ----------------------------------------------------------- */
 
 [dir="rtl"] .nav-close {

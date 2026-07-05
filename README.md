@@ -46,7 +46,7 @@ Cette plateforme cible précisément les frictions qui expliquent ce choix :
 
 ## Modèle de données Notion
 
-Une page Notion parente **« 🚚 Logistique & Transit — Plateforme »** contient 13 bases, toutes reliées entre
+Une page Notion parente **« 🚚 Logistique & Transit — Plateforme »** contient 15 bases, toutes reliées entre
 elles :
 
 | Base | Rôle |
@@ -64,6 +64,8 @@ elles :
 | `Étapes de suivi` | Timeline d'événements par dossier (freight tracking) |
 | `Utilisateurs` | Comptes de connexion — rôle (Interne/Client/Fournisseur), permission interne (Admin/Lecture seule), lien vers un `Client` ou `Fournisseur`, mot de passe hashé, jeton de réinitialisation |
 | `Journal d'audit` | Connexions, échecs de connexion, créations de compte/dossier, changements de statut, ajouts de documents |
+| `Grilles tarifaires` | Grilles de prix par mode/origine/destination (prix/kg, prix/CBM, poids minimum facturable, devis minimum, devise, délai), utilisées par le simulateur de devis public |
+| `Demandes de devis` | Leads captés depuis `/devis` : contact, trajet demandé, estimation calculée, statut de suivi commercial (`Nouveau` / `Contacté` / `Converti` / `Perdu`) |
 
 Toutes les relations sont bidirectionnelles (DUAL) côté Fournisseurs : depuis la fiche d'un fournisseur dans
 Notion, on voit directement les articles qu'il fournit, les dossiers et les mouvements de stock associés.
@@ -84,10 +86,34 @@ Pour démarrer un **nouveau** déploiement (nouveau client, nouvelle entreprise)
 NOTION_TOKEN=secret_xxx npx tsx scripts/seed-notion.ts
 ```
 
-Ce script crée la page parente et les 13 bases avec leurs relations dans le workspace Notion associé au
+Ce script crée la page parente et les bases avec leurs relations dans le workspace Notion associé au
 jeton fourni, puis imprime le bloc `NOTION_DS_*` à coller dans `.env.local`. Il ne crée aucune donnée de
 démonstration — la base est vide, prête pour un client réel. Partagez ensuite la page créée avec votre
 intégration Notion (`···` → `Connexions`).
+
+> Le script couvre les 13 bases historiques (Clients à Journal d'audit). Les deux bases ajoutées pour le
+> simulateur de devis (`Grilles tarifaires`, `Demandes de devis`) sont créées manuellement pour l'instant sur
+> un nouveau workspace — à faire évoluer si ce script doit rester la source de vérité pour les nouveaux
+> déploiements.
+
+## Simulateur de cotation automatique (`/devis`)
+
+Page **publique**, sans authentification, pensée comme point d'entrée pour un prospect qui trouve le lien
+sur un site vitrine, une annonce ou WhatsApp :
+
+1. Le prospect renseigne mode de transport / origine / destination / poids / volume.
+2. Une estimation s'affiche **instantanément** (calcul côté client dans `lib/quote.ts`, sans aller-retour
+   serveur), à partir des grilles tarifaires actives gérées sur la page interne `/tarifs`. Si aucune grille
+   ne correspond au trajet, un message invite à demander un devis personnalisé plutôt qu'un blocage.
+3. S'il le souhaite, le prospect envoie ses coordonnées (`/api/devis`, endpoint public rate-limité) : le
+   montant est **recalculé côté serveur** (jamais une valeur envoyée par le client) et enregistré comme
+   `Demande de devis` dans Notion. L'équipe interne est notifiée par e-mail et/ou WhatsApp si configuré, et
+   la demande apparaît dans le panneau « Demandes de devis reçues » de la page `/tarifs`.
+
+Le calcul (`lib/quote.ts`, testé unitairement) applique : filtrage par mode + grille active, correspondance
+par trajet (exacte, partielle ou générique `International`), tarification au poids facturable (`max(poids
+saisi, poids minimum facturable)` × prix/kg) ou au volume (volume × prix/CBM), avec un plancher au devis
+minimum de la grille.
 
 ## Migration depuis Excel
 
@@ -155,8 +181,8 @@ cp .env.example .env.local
 ```
 
 Champs obligatoires : `NOTION_TOKEN`, `AUTH_SECRET` (valeur aléatoire, ex. `openssl rand -base64 32`), et les
-13 `NOTION_DS_*` (déjà pré-remplis avec les bases créées pour ce projet, ou générés par `scripts/seed-notion.ts`
-pour un nouveau workspace).
+15 `NOTION_DS_*` (déjà pré-remplis avec les bases créées pour ce projet, ou générés par `scripts/seed-notion.ts`
+pour un nouveau workspace — voir la note plus haut pour les deux bases du simulateur de devis).
 
 Champs optionnels (l'app fonctionne sans, en mode dégradé documenté dans `.env.example`) :
 
@@ -167,7 +193,8 @@ Champs optionnels (l'app fonctionne sans, en mode dégradé documenté dans `.en
 | `SLACK_WEBHOOK_URL` | Les notifications Slack sont journalisées en console |
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_WHATSAPP_FROM` | Les notifications WhatsApp au client sont journalisées en console au lieu d'être envoyées |
 | `SENTRY_DSN` | Pas de remontée d'erreurs externe, seulement `console.error` |
-| `ADMIN_NOTIFICATION_EMAIL` | Personne n'est notifié par e-mail des nouvelles inscriptions (à valider manuellement sur `/comptes`) |
+| `ADMIN_NOTIFICATION_EMAIL` | Personne n'est notifié par e-mail des nouvelles inscriptions ni des nouvelles demandes de devis (à valider manuellement sur `/comptes` ou `/tarifs`) |
+| `ADMIN_WHATSAPP_NUMBER` | Personne n'est notifié par WhatsApp des nouvelles demandes de devis (nécessite les variables `TWILIO_*` ci-dessus) |
 
 ### 3. Installer et lancer
 
@@ -200,6 +227,10 @@ Ouvrez http://localhost:3000 — vous serez redirigé vers `/login`.
   et de dossiers liés pour les fournisseurs.
 - **Comptes** (interne) — validation ou refus des demandes d'inscription en attente.
 - **Journal d'audit** (interne) — connexions, échecs de connexion, créations, changements de statut.
+- **Tarifs** (interne) — gestion des grilles tarifaires (création, activation/désactivation) qui alimentent
+  le simulateur public, et suivi des demandes de devis reçues.
+- **Devis** (public, `/devis`) — simulateur de cotation instantané sans compte, avec capture de lead et
+  notification e-mail/WhatsApp de l'équipe interne sur chaque nouvelle demande.
 - **Mon espace** (client ou fournisseur) — vue filtrée automatiquement, avec export PDF des dossiers.
 - **Responsive** — menu latéral en tiroir sur mobile (avec inversion correcte en RTL), grilles et tableaux
   adaptatifs.
@@ -209,19 +240,23 @@ explicite dans l'interface plutôt qu'un plantage, et remonte vers Sentry si con
 
 ## Vérifications effectuées
 
-- Build de production, typecheck et 16 tests unitaires (vitest) passent.
+- Build de production, typecheck et 26 tests unitaires (vitest) passent, dont 10 pour la logique pure de
+  cotation (`lib/quote.ts` : filtrage par mode/grille active, correspondance de trajet exacte/partielle/
+  générique, tarification au poids vs au volume, planchers devis minimum et poids minimum facturable).
 - Contrôle d'accès par rôle (Interne Admin / Interne Lecture seule / Client / Fournisseur) vérifié avec des
   sessions simulées (signature JWT valide, sans dépendre d'un vrai compte Notion).
 - Rendu visuel vérifié par capture d'écran (Playwright + Chromium) : connexion en FR/EN/AR, bascule RTL du
   menu latéral et du tiroir mobile, page d'import CSV (téléchargement du modèle, message d'erreur propre
-  quand l'API échoue). Un bug d'i18n repéré ainsi (titre non traduit sur le chemin d'erreur de la Vue
-  d'ensemble) a été corrigé sur-le-champ.
+  quand l'API échoue), simulateur de devis public en FR/AR/mobile (formulaire, message « pas de grille »,
+  ouverture du formulaire de contact) et page interne `/tarifs`. Un bug d'i18n repéré ainsi (titre non
+  traduit sur le chemin d'erreur de la Vue d'ensemble) a été corrigé sur-le-champ.
 - Chaque route qui écrit dans Notion échoue proprement (JSON + message clair) plutôt que de planter, y
-  compris en cas d'erreur Notion inattendue.
+  compris en cas d'erreur Notion inattendue — vérifié en direct sur `/api/devis` (validation 400 sur trajet/
+  contact incomplet, erreur Notion propre en 500 sans jeton valide).
 
 Non vérifiable dans cet environnement (pas de jeton Notion réel ni d'identifiants de service) : le rendu
-avec de vraies données Notion, l'envoi réel d'e-mails/WhatsApp/Slack, et l'exécution de
-`scripts/seed-notion.ts` contre un vrai workspace.
+avec de vraies données Notion (grilles tarifaires réelles, estimation chiffrée réelle), l'envoi réel
+d'e-mails/WhatsApp/Slack, et l'exécution de `scripts/seed-notion.ts` contre un vrai workspace.
 
 ## Est-ce prêt pour un lancement commercial international ?
 
@@ -248,5 +283,6 @@ quelques points restent à traiter avant une mise en production à grande échel
 - Génération automatique de documents douaniers plus riches (actuellement un résumé PDF du dossier).
 - Recherche plein texte inter-bases, pagination pour de très gros volumes.
 - Rôles internes plus fins (ex. par entrepôt ou par zone géographique).
-- Portail de facturation/devis.
+- Facturation (le simulateur de devis couvre la cotation, pas encore la facturation).
 - Import CSV pour Clients/Fournisseurs/Articles (aujourd'hui limité aux Dossiers).
+- `scripts/seed-notion.ts` ne crée pas encore les bases `Grilles tarifaires` / `Demandes de devis`.
