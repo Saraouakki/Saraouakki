@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Varisia — Premium Rituals, Delivered</title>
+<meta name="description" content="Varisia — luxury smart beauty electronics and lifestyle pieces, delivered with Cash on Delivery across the GCC and Morocco." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="varisia-nav sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
+    <a href="#top" class="varisia-logo text-2xl"><span class="accent-v">V</span>ARISIA</a>
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <a href="#products" class="hover:opacity-60">Collection</a>
+      <a href="#checkout" class="hover:opacity-60">Order</a>
+      <a href="tracking.html" class="hover:opacity-60">Track Order</a>
+      <a href="mailto:varisia.shop@gmail.com" class="hover:opacity-60">Contact</a>
+    </nav>
+    <a href="#checkout" class="btn-varisia !py-2 !px-4 text-xs">Shop Now</a>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section id="top" class="px-5 pt-14 pb-16 md:pt-20 md:pb-24" style="background: linear-gradient(180deg, var(--varisia-nude-light), var(--varisia-nude));">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+    <div class="animate-fade-up">
+      <span class="badge-varisia">GCC &amp; Morocco · Cash on Delivery</span>
+      <h1 class="varisia-logo text-4xl md:text-6xl leading-tight mt-5">Elegance,<br>Engineered.</h1>
+      <p class="mt-5 text-base md:text-lg opacity-80 max-w-md">Premium smart beauty electronics and minimalist lifestyle pieces — curated for a ritual, not just a routine.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#products" class="btn-varisia">Discover The Collection</a>
+        <a href="tracking.html" class="btn-varisia btn-varisia-outline">Track My Order</a>
+      </div>
+      <div class="mt-8 flex items-center gap-6 text-xs uppercase tracking-wide opacity-70">
+        <span>✓ Pay on Delivery</span>
+        <span>✓ Verified Orders Only</span>
+        <span>✓ 2–5 Day Delivery</span>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <div class="w-64 h-64 md:w-80 md:h-80 rounded-full flex items-center justify-center" style="background: var(--varisia-black);">
+        <span class="varisia-logo text-6xl md:text-7xl" style="color: var(--varisia-nude-light);"><span class="accent-v">V</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section id="products" class="px-5 py-16 md:py-24 max-w-6xl mx-auto">
+  <div class="text-center mb-12">
+    <h2 class="varisia-logo text-3xl md:text-4xl">The Collection</h2>
+    <p class="opacity-70 mt-3">Three pieces. One standard of quality.</p>
+  </div>
+
+  <div id="product-grid" class="grid md:grid-cols-3 gap-7"></div>
+</section>
+
+<!-- ================= TRUST / HOW IT WORKS ================= -->
+<section class="px-5 py-14" style="background: var(--varisia-black); color: var(--varisia-nude-light);">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 text-center">
+    <div>
+      <p class="text-2xl mb-1">1</p>
+      <p class="text-sm opacity-80">Choose your piece &amp; place your order below</p>
+    </div>
+    <div>
+      <p class="text-2xl mb-1">2</p>
+      <p class="text-sm opacity-80">Verify your phone number with a one-time code</p>
+    </div>
+    <div>
+      <p class="text-2xl mb-1">3</p>
+      <p class="text-sm opacity-80">We confirm &amp; hand your order to our courier</p>
+    </div>
+    <div>
+      <p class="text-2xl mb-1">4</p>
+      <p class="text-sm opacity-80">Pay cash on delivery — track it live, every step</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHECKOUT ================= -->
+<section id="checkout" class="px-5 py-16 md:py-24 max-w-3xl mx-auto">
+  <div class="text-center mb-10">
+    <h2 class="varisia-logo text-3xl md:text-4xl">Complete Your Order</h2>
+    <p class="opacity-70 mt-3">One page. No account. Pay on delivery.</p>
+  </div>
+
+  <form id="checkout-form" class="checkout-card p-6 md:p-9 space-y-7">
+
+    <!-- Selected product summary -->
+    <div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Your Selection</label>
+      <div id="selected-product-summary" class="flex items-center justify-between border rounded-lg p-4" style="border-color: rgba(0,0,0,0.1); background: var(--varisia-nude-light);">
+        <span id="selected-product-name" class="font-medium">Select a product above</span>
+        <span id="selected-product-price" class="varisia-logo text-lg"></span>
+      </div>
+      <input type="hidden" id="product-id" name="productId" required>
+      <div class="field-error" id="err-product">Please select a product from the collection.</div>
+    </div>
+
+    <!-- Variant -->
+    <div id="variant-wrapper" class="hidden">
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Variant</label>
+      <select id="variant" name="variant" class="varisia-input">
+      </select>
+    </div>
+
+    <!-- Contact details -->
+    <div class="grid md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Full Name</label>
+        <input type="text" id="full-name" name="fullName" class="varisia-input" placeholder="e.g. Sara El Amrani" required>
+        <div class="field-error" id="err-name">Please enter your full name.</div>
+      </div>
+      <div>
+        <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Country</label>
+        <select id="country" name="country" class="varisia-input">
+          <option value="AE">United Arab Emirates</option>
+          <option value="SA">Saudi Arabia</option>
+          <option value="KW">Kuwait</option>
+          <option value="QA">Qatar</option>
+          <option value="BH">Bahrain</option>
+          <option value="OM">Oman</option>
+          <option value="MA">Morocco</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Delivery Address</label>
+      <input type="text" id="address" name="address" class="varisia-input" placeholder="Street, city, area" required>
+      <div class="field-error" id="err-address">Please enter your delivery address.</div>
+    </div>
+
+    <!-- ============ PHONE + OTP VERIFICATION BLOCK ============ -->
+    <div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Phone Number</label>
+      <div class="flex gap-3">
+        <input type="tel" id="phone" name="phone" class="varisia-input" placeholder="+971 5X XXX XXXX" required>
+        <button type="button" id="send-otp-btn" class="btn-varisia !px-5 whitespace-nowrap">Verify</button>
+      </div>
+      <div class="field-error" id="err-phone">Please enter a valid phone number.</div>
+
+      <div id="otp-box" class="otp-box mt-4 hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <p class="text-sm font-medium">Enter the 6-digit code sent to your phone</p>
+          <span id="otp-status" class="otp-status unverified"><span class="dot"></span> Not verified</span>
+        </div>
+        <div class="otp-inputs">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+          <input type="text" maxlength="1" inputmode="numeric" class="otp-digit">
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <button type="button" id="verify-otp-btn" class="btn-varisia !py-2 !px-4 text-xs">Confirm Code</button>
+          <button type="button" id="resend-otp-btn" class="underline opacity-70 hover:opacity-100" disabled>Resend code (<span id="resend-timer">30</span>s)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ INLINE UPSELL WIDGET ============ -->
+    <div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-3 opacity-70">Make It Extra Special</label>
+      <div class="space-y-3">
+        <label class="upsell-item" data-upsell="gift" data-price="9">
+          <input type="checkbox" name="upsell-gift" value="Premium Gift Packaging">
+          <span>
+            <span class="block font-medium text-sm">Varisia Premium Gift Packaging — +$9</span>
+            <span class="block text-xs opacity-60">Signature black box, ribbon &amp; handwritten card.</span>
+          </span>
+        </label>
+        <label class="upsell-item" data-upsell="warranty" data-price="15">
+          <input type="checkbox" name="upsell-warranty" value="Extended 1-Year Warranty">
+          <span>
+            <span class="block font-medium text-sm">Extended 1-Year Warranty — +$15</span>
+            <span class="block text-xs opacity-60">Full replacement cover, zero questions asked.</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Order total -->
+    <div class="order-total-bar flex items-center justify-between">
+      <span class="text-sm uppercase tracking-wide opacity-70">Total Due on Delivery</span>
+      <span id="order-total" class="varisia-logo text-2xl">$0</span>
+    </div>
+
+    <button type="submit" id="place-order-btn" class="btn-varisia w-full text-sm" disabled>
+      Place Order — Pay on Delivery
+    </button>
+    <p class="text-xs text-center opacity-60">By placing this order you agree to receive one verification SMS/WhatsApp code. No payment is taken online.</p>
+  </form>
+
+  <div id="order-success" class="hidden checkout-card p-8 mt-8 text-center">
+    <p class="varisia-logo text-2xl mb-2">Order Confirmed</p>
+    <p class="opacity-75">Your order <span id="success-order-id" class="font-semibold"></span> has been received.</p>
+    <a id="success-tracking-link" href="tracking.html" class="btn-varisia mt-5 inline-block">Track My Order</a>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="px-5 py-10" style="background: var(--varisia-nude);">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <span class="varisia-logo text-xl"><span class="accent-v">V</span>ARISIA</span>
+    <p class="text-xs opacity-70">© 2026 Varisia. All rights reserved.</p>
+    <a href="mailto:varisia.shop@gmail.com" class="text-xs underline opacity-80">varisia.shop@gmail.com</a>
+  </div>
+</footer>
+
+<div id="toast" class="varisia-toast"></div>
+
+<script>
+/* ============================================================
+   Varisia — Product Catalog (mirrors docs/PRODUCT_RESEARCH.md)
+   ============================================================ */
+const PRODUCTS = [
+  {
+    id: "varisia-lumiere",
+    name: "Varisia Lumière",
+    tagline: "LED Photon Facial Therapy Mask",
+    icon: "✦",
+    price: 95,
+    variants: ["Standard", "Pro (with neck attachment)"]
+  },
+  {
+    id: "varisia-vanity",
+    name: "Varisia Vanity",
+    tagline: "Rotating Jewelry &amp; Perfume Organizer, LED Mirror",
+    icon: "◆",
+    price: 68,
+    variants: ["Nude Beige", "Black Edition"]
+  },
+  {
+    id: "varisia-aura",
+    name: "Varisia Aura",
+    tagline: "Cordless Ionic Hot-Air Styling Brush",
+    icon: "❖",
+    price: 122,
+    variants: ["Standard Barrel", "Dual Barrel Set"]
+  }
+];
+
+const state = {
+  product: null,
+  upsells: { gift: false, warranty: false },
+  otpVerified: false,
+  otpRequestId: null
+};
+
+/* ---------- Render product grid ---------- */
+const grid = document.getElementById("product-grid");
+PRODUCTS.forEach(p => {
+  const card = document.createElement("div");
+  card.className = "product-card animate-fade-up";
+  card.dataset.id = p.id;
+  card.innerHTML = `
+    <div class="product-media">
+      <span class="varisia-logo text-5xl" style="color: var(--varisia-black);">${p.icon}</span>
+    </div>
+    <div class="p-5">
+      <p class="varisia-logo text-xl">${p.name}</p>
+      <p class="text-sm opacity-70 mt-1 mb-4">${p.tagline}</p>
+      <div class="flex items-center justify-between">
+        <span class="varisia-logo text-lg">$${p.price}</span>
+        <button type="button" class="btn-varisia !py-2 !px-4 text-xs select-product-btn">Select</button>
+      </div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+grid.addEventListener("click", (e) => {
+  const btn = e.target.closest(".select-product-btn");
+  if (!btn) return;
+  const card = btn.closest(".product-card");
+  selectProduct(card.dataset.id);
+  document.getElementById("checkout").scrollIntoView({ behavior: "smooth" });
+});
+
+function selectProduct(id) {
+  const product = PRODUCTS.find(p => p.id === id);
+  if (!product) return;
+  state.product = product;
+
+  document.querySelectorAll(".product-card").forEach(c => {
+    c.classList.toggle("selected", c.dataset.id === id);
+  });
+
+  document.getElementById("product-id").value = product.id;
+  document.getElementById("selected-product-name").textContent = `${product.name} — ${product.tagline}`;
+  document.getElementById("selected-product-price").textContent = `$${product.price}`;
+  document.getElementById("err-product").classList.remove("show");
+
+  const variantWrapper = document.getElementById("variant-wrapper");
+  const variantSelect = document.getElementById("variant");
+  variantSelect.innerHTML = product.variants.map(v => `<option value="${v}">${v}</option>`).join("");
+  variantWrapper.classList.remove("hidden");
+
+  updateTotal();
+}
+
+/* ---------- Upsell widget ---------- */
+document.querySelectorAll(".upsell-item").forEach(item => {
+  item.addEventListener("click", (e) => {
+    if (e.target.tagName !== "INPUT") {
+      const checkbox = item.querySelector("input[type=checkbox]");
+      checkbox.checked = !checkbox.checked;
+    }
+    const checkbox = item.querySelector("input[type=checkbox]");
+    const key = item.dataset.upsell;
+    state.upsells[key] = checkbox.checked;
+    item.classList.toggle("active", checkbox.checked);
+    updateTotal();
+  });
+});
+
+function updateTotal() {
+  let total = state.product ? state.product.price : 0;
+  document.querySelectorAll(".upsell-item").forEach(item => {
+    const checkbox = item.querySelector("input[type=checkbox]");
+    if (checkbox.checked) total += Number(item.dataset.price);
+  });
+  document.getElementById("order-total").textContent = `$${total}`;
+}
+
+/* ---------- OTP verification flow ---------- */
+const otpBox = document.getElementById("otp-box");
+const otpStatus = document.getElementById("otp-status");
+const sendOtpBtn = document.getElementById("send-otp-btn");
+const verifyOtpBtn = document.getElementById("verify-otp-btn");
+const resendOtpBtn = document.getElementById("resend-otp-btn");
+const otpDigits = Array.from(document.querySelectorAll(".otp-digit"));
+const placeOrderBtn = document.getElementById("place-order-btn");
+let resendInterval = null;
+
+otpDigits.forEach((input, idx) => {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^0-9]/g, "");
+    if (input.value && idx < otpDigits.length - 1) otpDigits[idx + 1].focus();
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && !input.value && idx > 0) otpDigits[idx - 1].focus();
+  });
+});
+
+sendOtpBtn.addEventListener("click", async () => {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone || phone.length < 8) {
+    showFieldError("err-phone", true);
+    return;
+  }
+  showFieldError("err-phone", false);
+  sendOtpBtn.disabled = true;
+  sendOtpBtn.textContent = "Sending...";
+  try {
+    const res = await fetch("/api/otp/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not send code");
+    state.otpRequestId = data.requestId;
+    otpBox.classList.remove("hidden");
+    startResendTimer();
+    showToast("Verification code sent.", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.textContent = "Verify";
+  }
+});
+
+resendOtpBtn.addEventListener("click", () => sendOtpBtn.click());
+
+verifyOtpBtn.addEventListener("click", async () => {
+  const code = otpDigits.map(d => d.value).join("");
+  const phone = document.getElementById("phone").value.trim();
+  if (code.length !== 6) {
+    showToast("Enter the full 6-digit code.", "error");
+    return;
+  }
+  verifyOtpBtn.disabled = true;
+  try {
+    const res = await fetch("/api/otp/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, code, requestId: state.otpRequestId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Invalid code");
+    state.otpVerified = true;
+    otpStatus.classList.remove("unverified");
+    otpStatus.classList.add("verified");
+    otpStatus.innerHTML = `<span class="dot"></span> Verified`;
+    placeOrderBtn.disabled = false;
+    showToast("Phone verified.", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    verifyOtpBtn.disabled = false;
+  }
+});
+
+function startResendTimer() {
+  let seconds = 30;
+  resendOtpBtn.disabled = true;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    seconds -= 1;
+    document.getElementById("resend-timer").textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(resendInterval);
+      resendOtpBtn.disabled = false;
+      resendOtpBtn.textContent = "Resend code";
+    }
+  }, 1000);
+}
+
+/* ---------- Form submission ---------- */
+document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let valid = true;
+  if (!state.product) { showFieldError("err-product", true); valid = false; }
+  if (!document.getElementById("full-name").value.trim()) { showFieldError("err-name", true); valid = false; }
+  if (!document.getElementById("address").value.trim()) { showFieldError("err-address", true); valid = false; }
+  if (!state.otpVerified) { showToast("Please verify your phone number first.", "error"); valid = false; }
+  if (!valid) return;
+
+  placeOrderBtn.disabled = true;
+  placeOrderBtn.textContent = "Placing order...";
+
+  const upsellLabels = [];
+  if (state.upsells.gift) upsellLabels.push("Premium Gift Packaging");
+  if (state.upsells.warranty) upsellLabels.push("Extended 1-Year Warranty");
+
+  const payload = {
+    fullName: document.getElementById("full-name").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    country: document.getElementById("country").value,
+    address: document.getElementById("address").value.trim(),
+    productId: state.product.id,
+    productName: state.product.name,
+    variant: document.getElementById("variant").value,
+    price: state.product.price,
+    upsells: upsellLabels,
+    total: Number(document.getElementById("order-total").textContent.replace("$", "")),
+    otpRequestId: state.otpRequestId
+  };
+
+  try {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not place order");
+
+    document.getElementById("checkout-form").classList.add("hidden");
+    document.getElementById("order-success").classList.remove("hidden");
+    document.getElementById("success-order-id").textContent = data.orderId;
+    document.getElementById("success-tracking-link").href = `tracking.html?order=${encodeURIComponent(data.orderId)}`;
+    document.getElementById("order-success").scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    showToast(err.message, "error");
+    placeOrderBtn.disabled = false;
+    placeOrderBtn.textContent = "Place Order — Pay on Delivery";
+  }
+});
+
+function showFieldError(id, show) {
+  document.getElementById(id).classList.toggle("show", show);
+}
+
+function showToast(message, type) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.className = `varisia-toast show ${type || ""}`;
+  setTimeout(() => toast.classList.remove("show"), 3500);
+}
+</script>
+</body>
+</html>

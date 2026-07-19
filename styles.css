@@ -1,0 +1,356 @@
+/* ==========================================================================
+   Varisia — Luxury Minimalist Theme
+   Palette: Nude/Beige (#F5E6D3) + Black (#000000)
+   ========================================================================== */
+
+:root {
+  --varisia-nude: #F5E6D3;
+  --varisia-nude-light: #FBF3E9;
+  --varisia-nude-dark: #E8D2B5;
+  --varisia-black: #000000;
+  --varisia-black-soft: #1A1A1A;
+  --varisia-gold: #C9A876;
+  --varisia-white: #FFFFFF;
+  --varisia-error: #B3261E;
+  --varisia-success: #2E7D32;
+
+  --font-display: 'Cormorant Garamond', 'Playfair Display', serif;
+  --font-body: 'Poppins', 'Inter', sans-serif;
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--varisia-nude-light);
+  color: var(--varisia-black);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Logo / Brand ---------- */
+
+.varisia-logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--varisia-black);
+}
+
+.varisia-logo .accent-v {
+  position: relative;
+  display: inline-block;
+}
+
+.varisia-logo .accent-v::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: var(--varisia-black);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+/* ---------- Header / Nav ---------- */
+
+.varisia-nav {
+  background: var(--varisia-nude-light);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn-varisia {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--varisia-black);
+  color: var(--varisia-nude-light);
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 0.95rem 1.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--varisia-black);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-varisia:hover {
+  background: var(--varisia-nude-light);
+  color: var(--varisia-black);
+}
+
+.btn-varisia:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-varisia-outline {
+  background: transparent;
+  color: var(--varisia-black);
+  border: 1px solid var(--varisia-black);
+}
+
+.btn-varisia-outline:hover {
+  background: var(--varisia-black);
+  color: var(--varisia-nude-light);
+}
+
+/* ---------- Product Cards ---------- */
+
+.product-card {
+  background: var(--varisia-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+.product-card .product-media {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(160deg, var(--varisia-nude) 0%, var(--varisia-nude-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card.selected {
+  outline: 2px solid var(--varisia-black);
+  outline-offset: 2px;
+}
+
+.badge-varisia {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: var(--varisia-black);
+  color: var(--varisia-nude-light);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* ---------- Checkout Card ---------- */
+
+.checkout-card {
+  background: var(--varisia-white);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.varisia-input {
+  width: 100%;
+  background: var(--varisia-nude-light);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--varisia-black);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.varisia-input:focus {
+  outline: none;
+  border-color: var(--varisia-black);
+  background: var(--varisia-white);
+}
+
+.varisia-input.input-error {
+  border-color: var(--varisia-error);
+}
+
+.field-error {
+  color: var(--varisia-error);
+  font-size: 0.78rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.field-error.show { display: block; }
+
+/* ---------- OTP Verification Block ---------- */
+
+.otp-box {
+  background: var(--varisia-nude);
+  border: 1px dashed rgba(0,0,0,0.25);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.25rem;
+}
+
+.otp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.otp-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C7A155;
+}
+
+.otp-status.verified .dot { background: var(--varisia-success); }
+.otp-status.unverified .dot { background: var(--varisia-error); }
+
+.otp-inputs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.85rem 0;
+}
+
+.otp-inputs input {
+  width: 3rem;
+  height: 3.25rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: var(--varisia-white);
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: var(--radius-sm);
+}
+
+.otp-inputs input:focus {
+  outline: none;
+  border-color: var(--varisia-black);
+}
+
+/* ---------- Upsell Widget ---------- */
+
+.upsell-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  background: var(--varisia-nude-light);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.upsell-item:hover { border-color: rgba(0,0,0,0.3); }
+
+.upsell-item.active {
+  border-color: var(--varisia-black);
+  background: var(--varisia-nude);
+}
+
+.upsell-item input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--varisia-black);
+}
+
+/* ---------- Order Summary / Sticky Total ---------- */
+
+.order-total-bar {
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding-top: 1rem;
+}
+
+/* ---------- Tracking Page ---------- */
+
+.tracking-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tracking-step .node {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--varisia-white);
+  flex-shrink: 0;
+}
+
+.tracking-step.done .node {
+  background: var(--varisia-black);
+  border-color: var(--varisia-black);
+  color: var(--varisia-nude-light);
+}
+
+.tracking-step .connector {
+  width: 2px;
+  flex: 1;
+  background: rgba(0,0,0,0.15);
+  min-height: 2.5rem;
+  margin-left: 1.25rem;
+}
+
+.tracking-step.done .connector { background: var(--varisia-black); }
+
+/* ---------- Toast ---------- */
+
+.varisia-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--varisia-black);
+  color: var(--varisia-nude-light);
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  font-size: 0.9rem;
+  z-index: 100;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.varisia-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.varisia-toast.error { background: var(--varisia-error); }
+.varisia-toast.success { background: var(--varisia-success); }
+
+/* ---------- Utility ---------- */
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .otp-inputs input { width: 2.5rem; height: 2.9rem; }
+}
