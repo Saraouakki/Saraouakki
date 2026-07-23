@@ -1,5 +1,5 @@
 /**
- * Varisia — Backend API (Node.js / Express)
+ * Om Ritaj — Backend API (Node.js / Express)
  * Handles: OTP verification, order intake, Google Sheets logging,
  * 3PL fulfillment webhook, and order tracking status.
  *
@@ -26,7 +26,7 @@ const ORDERS_FILE = path.join(__dirname, 'data', 'orders.json');
 const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const otpStore = new Map(); // phone -> { code, requestId, expiresAt, verified }
 
-const STATUS_FLOW = ['Order Confirmed', 'Packaged', 'Handed to Courier', 'Out for Delivery', 'Delivered'];
+const STATUS_FLOW = ['Commande confirmée', 'En préparation', 'Remise au livreur', 'En cours de livraison', 'Livrée'];
 
 /* ------------------------------------------------------------------ */
 /* Local order store (flat JSON file — swap for a real DB when ready) */
@@ -45,7 +45,7 @@ function writeOrders(orders) {
 function generateOrderId() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const rand = crypto.randomBytes(3).toString('hex').toUpperCase();
-  return `VAR-${date}-${rand}`;
+  return `OMR-${date}-${rand}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -76,7 +76,7 @@ async function sendOtpViaTwilio(phone, code) {
   await twilio.messages.create({
     from: TWILIO_WHATSAPP_FROM ? `whatsapp:${TWILIO_WHATSAPP_FROM}` : undefined,
     to: TWILIO_WHATSAPP_FROM ? `whatsapp:${phone}` : phone,
-    body: `Your Varisia verification code is ${code}. It expires in 5 minutes.`
+    body: `Votre code de vérification Om Ritaj est ${code}. Il expire dans 5 minutes.`
   });
   return { mocked: false, provider: 'twilio-sms-whatsapp' };
 }
@@ -167,7 +167,7 @@ async function appendOrderToSheet(order) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: GOOGLE_SHEETS_ID,
-    range: 'Orders!A:I',
+    range: 'Orders!A:J',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [[
@@ -175,6 +175,7 @@ async function appendOrderToSheet(order) {
         order.createdAt,
         order.fullName,
         order.phone,
+        order.city,
         order.productName,
         order.variant,
         order.total,
@@ -209,10 +210,11 @@ async function forwardToFulfillment(order) {
       order_id: order.orderId,
       customer_name: order.fullName,
       phone: order.phone,
+      city: order.city,
       address: order.address,
-      country: order.country,
       sku: order.productId,
       variant: order.variant,
+      weight_kg: order.weightKg,
       cod_amount: order.total,
       upsells: order.upsells
     })
@@ -228,12 +230,12 @@ async function forwardToFulfillment(order) {
 app.post('/api/orders', async (req, res) => {
   try {
     const {
-      fullName, phone, country, address,
-      productId, productName, variant,
+      fullName, phone, city, address,
+      productId, productName, variant, weightKg,
       price, upsells, total, otpRequestId
     } = req.body;
 
-    if (!fullName || !phone || !address || !productId) {
+    if (!fullName || !phone || !city || !address || !productId) {
       return res.status(400).json({ error: 'Missing required order fields.' });
     }
     if (!isPhoneVerified(phone, otpRequestId)) {
@@ -248,11 +250,12 @@ app.post('/api/orders', async (req, res) => {
       createdAt: now,
       fullName,
       phone,
-      country: country || '',
+      city,
       address,
       productId,
       productName: productName || productId,
       variant: variant || 'Standard',
+      weightKg: Number(weightKg) || 0,
       price: Number(price) || 0,
       upsells: Array.isArray(upsells) ? upsells : [],
       total: Number(total) || Number(price) || 0,
@@ -320,5 +323,5 @@ app.post('/api/orders/:orderId/status', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Varisia backend running on port ${PORT}`);
+  console.log(`Om Ritaj backend running on port ${PORT}`);
 });

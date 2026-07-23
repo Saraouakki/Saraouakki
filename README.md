@@ -1,37 +1,42 @@
-# Varisia
+# Om Ritaj
 
-Luxury e-commerce brand for the GCC and Morocco — smart beauty electronics and minimalist lifestyle pieces, sold via Cash on Delivery with automated order handling.
+Pâtisserie marocaine artisanale, faite maison — vendue au kilo avec paiement à la livraison. Plateforme e-commerce créée pour la page Instagram [@omritaj28](https://www.instagram.com/omritaj28).
 
-- Official email: **varisia.shop@gmail.com**
-- Theme: Nude/Beige (`#F5E6D3`) + Black (`#000000`), minimalist and premium.
+- Theme: Crème (`#FFF8F0`) + Brun chocolat (`#4A2C1D`) + Or caramel (`#C9974A`).
 
-## What's in this repo
+## Contenu du repo
 
-| File | Purpose |
+| Fichier | Rôle |
 |---|---|
-| `index.html` | Landing page, product collection, 1-page checkout, OTP verification, inline upsell widget |
-| `tracking.html` | Customer-facing order tracking page |
-| `styles.css` | Varisia luxury theme (colors, typography, components) |
-| `server.js` | Express backend: OTP, order intake, Google Sheets sync, 3PL webhook, tracking API |
-| `package.json` | Backend dependencies |
-| `.env.example` | Environment variable template (Twilio, Google Sheets, 3PL) |
-| `docs/PRODUCT_RESEARCH.md` | 3 curated high-ticket products with sourcing strategy and pricing matrix |
-| `docs/DEPLOYMENT_GUIDE.md` | Step-by-step Hostinger deployment (Node.js App via hPanel) |
+| `index.html` | Page d'accueil, carte des pâtisseries, commande en 1 page (poids au kg), vérification OTP, option emballage cadeau |
+| `tracking.html` | Page de suivi de commande pour les clients |
+| `styles.css` | Thème Om Ritaj (couleurs, typographie, composants) |
+| `server.js` | Backend Express : OTP, prise de commande, sync Google Sheets, webhook livraison, suivi de commande |
+| `package.json` | Dépendances backend |
+| `.env.example` | Modèle de variables d'environnement (Twilio, Google Sheets, livraison) |
+| `docs/PRODUCTS.md` | Carte des pâtisseries et prix au kilo |
+| `docs/DEPLOYMENT_GUIDE.md` | Guide de déploiement Hostinger pas à pas |
 
-## Quick start (local)
+## Démarrage rapide (local)
 
 ```bash
 npm install
-cp .env.example .env   # fill in Twilio / Google Sheets / 3PL credentials, or leave blank for mock mode
+cp .env.example .env   # renseigner Twilio / Google Sheets / livreur, ou laisser vide pour le mode mock
 npm start
 ```
 
-Then open `http://localhost:3000`.
+Puis ouvrir `http://localhost:3000`.
 
-## Deploying
+## Déploiement
 
-See [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) for the full Hostinger walkthrough.
+Voir [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) pour le guide complet Hostinger.
 
-## Product research
+## Catalogue
 
-See [`docs/PRODUCT_RESEARCH.md`](docs/PRODUCT_RESEARCH.md) for the 3 curated products, supplier sync strategy, and pricing/margin breakdown.
+Voir [`docs/PRODUCTS.md`](docs/PRODUCTS.md) pour la liste des pâtisseries et leurs prix au kilo.
+
+## À faire avant la mise en ligne
+
+- Remplacer les icônes symboliques des produits par de vraies photos.
+- Vérifier/compléter les coordonnées de contact (WhatsApp, e-mail).
+- Configurer Twilio, Google Sheets et le webhook du livreur si l'automatisation complète est souhaitée (sinon le site fonctionne en mode mock, sans SMS réel ni sync automatique).

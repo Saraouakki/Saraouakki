@@ -1,7 +1,7 @@
 {
-  "name": "varisia-backend",
+  "name": "om-ritaj-backend",
   "version": "1.0.0",
-  "description": "Varisia — luxury e-commerce landing page, checkout, and order automation backend.",
+  "description": "Om Ritaj — pâtisserie marocaine faite maison : site vitrine, panier au kilo, et backend de commande.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

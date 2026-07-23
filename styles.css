@@ -1,27 +1,28 @@
 /* ==========================================================================
-   Varisia — Luxury Minimalist Theme
-   Palette: Nude/Beige (#F5E6D3) + Black (#000000)
+   Om Ritaj — Pâtisserie Marocaine Artisanale
+   Palette: Crème (#FFF8F0) + Brun Chocolat (#4A2C1D) + Or Caramel (#C9974A)
    ========================================================================== */
 
 :root {
-  --varisia-nude: #F5E6D3;
-  --varisia-nude-light: #FBF3E9;
-  --varisia-nude-dark: #E8D2B5;
-  --varisia-black: #000000;
-  --varisia-black-soft: #1A1A1A;
-  --varisia-gold: #C9A876;
-  --varisia-white: #FFFFFF;
-  --varisia-error: #B3261E;
-  --varisia-success: #2E7D32;
+  --omr-cream: #FFF8F0;
+  --omr-cream-light: #FFFDFB;
+  --omr-cream-dark: #F3E4D0;
+  --omr-brown: #4A2C1D;
+  --omr-brown-soft: #6B3F2B;
+  --omr-gold: #C9974A;
+  --omr-gold-light: #E3BE84;
+  --omr-white: #FFFFFF;
+  --omr-error: #B3261E;
+  --omr-success: #2E7D32;
 
-  --font-display: 'Cormorant Garamond', 'Playfair Display', serif;
+  --font-display: 'Playfair Display', 'Cormorant Garamond', serif;
   --font-body: 'Poppins', 'Inter', sans-serif;
 
   --radius-lg: 18px;
   --radius-md: 12px;
   --radius-sm: 8px;
-  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 12px 40px rgba(74, 44, 29, 0.12);
+  --shadow-card: 0 8px 24px rgba(74, 44, 29, 0.08);
 }
 
 * { box-sizing: border-box; }
@@ -31,93 +32,79 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--varisia-nude-light);
-  color: var(--varisia-black);
+  background: var(--omr-cream);
+  color: var(--omr-brown);
   -webkit-font-smoothing: antialiased;
 }
 
 /* ---------- Logo / Brand ---------- */
 
-.varisia-logo {
+.omr-logo {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--varisia-black);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--omr-brown);
 }
 
-.varisia-logo .accent-v {
-  position: relative;
-  display: inline-block;
-}
-
-.varisia-logo .accent-v::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: var(--varisia-black);
-  border-radius: 50%;
-  transform: translateX(-50%);
+.omr-logo .accent-o {
+  color: var(--omr-gold);
 }
 
 /* ---------- Header / Nav ---------- */
 
-.varisia-nav {
-  background: var(--varisia-nude-light);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+.omr-nav {
+  background: var(--omr-cream-light);
+  border-bottom: 1px solid rgba(74, 44, 29, 0.08);
 }
 
 /* ---------- Buttons ---------- */
 
-.btn-varisia {
+.btn-omr {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--varisia-black);
-  color: var(--varisia-nude-light);
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
   font-family: var(--font-body);
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  font-size: 0.9rem;
   padding: 0.95rem 1.75rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--varisia-black);
+  border: 1px solid var(--omr-brown);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
-.btn-varisia:hover {
-  background: var(--varisia-nude-light);
-  color: var(--varisia-black);
+.btn-omr:hover {
+  background: var(--omr-gold);
+  border-color: var(--omr-gold);
+  color: var(--omr-brown);
 }
 
-.btn-varisia:disabled {
+.btn-omr:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.btn-varisia-outline {
+.btn-omr-outline {
   background: transparent;
-  color: var(--varisia-black);
-  border: 1px solid var(--varisia-black);
+  color: var(--omr-brown);
+  border: 1px solid var(--omr-brown);
 }
 
-.btn-varisia-outline:hover {
-  background: var(--varisia-black);
-  color: var(--varisia-nude-light);
+.btn-omr-outline:hover {
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
 }
 
 /* ---------- Product Cards ---------- */
 
 .product-card {
-  background: var(--varisia-white);
+  background: var(--omr-white);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(74, 44, 29, 0.08);
   box-shadow: var(--shadow-card);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -130,62 +117,68 @@ body {
 
 .product-card .product-media {
   aspect-ratio: 1 / 1;
-  background: linear-gradient(160deg, var(--varisia-nude) 0%, var(--varisia-nude-dark) 100%);
+  background: linear-gradient(160deg, var(--omr-cream-dark) 0%, var(--omr-gold-light) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .product-card.selected {
-  outline: 2px solid var(--varisia-black);
+  outline: 2px solid var(--omr-brown);
   outline-offset: 2px;
 }
 
-.badge-varisia {
+.badge-omr {
   display: inline-block;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 600;
-  background: var(--varisia-black);
-  color: var(--varisia-nude-light);
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
+}
+
+.price-tag {
+  font-size: 0.72rem;
+  color: var(--omr-gold);
+  font-weight: 600;
 }
 
 /* ---------- Checkout Card ---------- */
 
 .checkout-card {
-  background: var(--varisia-white);
-  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--omr-white);
+  border: 1px solid rgba(74, 44, 29, 0.1);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
 }
 
-.varisia-input {
+.omr-input {
   width: 100%;
-  background: var(--varisia-nude-light);
-  border: 1px solid rgba(0,0,0,0.12);
+  background: var(--omr-cream);
+  border: 1px solid rgba(74, 44, 29, 0.15);
   border-radius: var(--radius-sm);
   padding: 0.85rem 1rem;
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: var(--varisia-black);
+  color: var(--omr-brown);
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.varisia-input:focus {
+.omr-input:focus {
   outline: none;
-  border-color: var(--varisia-black);
-  background: var(--varisia-white);
+  border-color: var(--omr-brown);
+  background: var(--omr-white);
 }
 
-.varisia-input.input-error {
-  border-color: var(--varisia-error);
+.omr-input.input-error {
+  border-color: var(--omr-error);
 }
 
 .field-error {
-  color: var(--varisia-error);
+  color: var(--omr-error);
   font-size: 0.78rem;
   margin-top: 0.25rem;
   display: none;
@@ -196,8 +189,8 @@ body {
 /* ---------- OTP Verification Block ---------- */
 
 .otp-box {
-  background: var(--varisia-nude);
-  border: 1px dashed rgba(0,0,0,0.25);
+  background: var(--omr-cream-dark);
+  border: 1px dashed rgba(74, 44, 29, 0.3);
   border-radius: var(--radius-md);
   padding: 1.1rem 1.25rem;
 }
@@ -214,11 +207,11 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #C7A155;
+  background: var(--omr-gold);
 }
 
-.otp-status.verified .dot { background: var(--varisia-success); }
-.otp-status.unverified .dot { background: var(--varisia-error); }
+.otp-status.verified .dot { background: var(--omr-success); }
+.otp-status.unverified .dot { background: var(--omr-error); }
 
 .otp-inputs {
   display: flex;
@@ -232,14 +225,14 @@ body {
   text-align: center;
   font-size: 1.25rem;
   font-weight: 600;
-  background: var(--varisia-white);
-  border: 1px solid rgba(0,0,0,0.15);
+  background: var(--omr-white);
+  border: 1px solid rgba(74, 44, 29, 0.2);
   border-radius: var(--radius-sm);
 }
 
 .otp-inputs input:focus {
   outline: none;
-  border-color: var(--varisia-black);
+  border-color: var(--omr-brown);
 }
 
 /* ---------- Upsell Widget ---------- */
@@ -248,32 +241,32 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(74, 44, 29, 0.12);
   border-radius: var(--radius-md);
   padding: 0.9rem 1rem;
   cursor: pointer;
-  background: var(--varisia-nude-light);
+  background: var(--omr-cream);
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.upsell-item:hover { border-color: rgba(0,0,0,0.3); }
+.upsell-item:hover { border-color: rgba(74, 44, 29, 0.35); }
 
 .upsell-item.active {
-  border-color: var(--varisia-black);
-  background: var(--varisia-nude);
+  border-color: var(--omr-brown);
+  background: var(--omr-cream-dark);
 }
 
 .upsell-item input[type="checkbox"] {
   margin-top: 0.2rem;
   width: 1.1rem;
   height: 1.1rem;
-  accent-color: var(--varisia-black);
+  accent-color: var(--omr-brown);
 }
 
 /* ---------- Order Summary / Sticky Total ---------- */
 
 .order-total-bar {
-  border-top: 1px solid rgba(0,0,0,0.1);
+  border-top: 1px solid rgba(74, 44, 29, 0.12);
   padding-top: 1rem;
 }
 
@@ -289,38 +282,38 @@ body {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  border: 2px solid rgba(0,0,0,0.2);
+  border: 2px solid rgba(74, 44, 29, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--varisia-white);
+  background: var(--omr-white);
   flex-shrink: 0;
 }
 
 .tracking-step.done .node {
-  background: var(--varisia-black);
-  border-color: var(--varisia-black);
-  color: var(--varisia-nude-light);
+  background: var(--omr-brown);
+  border-color: var(--omr-brown);
+  color: var(--omr-cream-light);
 }
 
 .tracking-step .connector {
   width: 2px;
   flex: 1;
-  background: rgba(0,0,0,0.15);
+  background: rgba(74, 44, 29, 0.15);
   min-height: 2.5rem;
   margin-left: 1.25rem;
 }
 
-.tracking-step.done .connector { background: var(--varisia-black); }
+.tracking-step.done .connector { background: var(--omr-brown); }
 
 /* ---------- Toast ---------- */
 
-.varisia-toast {
+.omr-toast {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  background: var(--varisia-black);
-  color: var(--varisia-nude-light);
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
   padding: 0.85rem 1.25rem;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-soft);
@@ -332,13 +325,13 @@ body {
   pointer-events: none;
 }
 
-.varisia-toast.show {
+.omr-toast.show {
   transform: translateY(0);
   opacity: 1;
 }
 
-.varisia-toast.error { background: var(--varisia-error); }
-.varisia-toast.success { background: var(--varisia-success); }
+.omr-toast.error { background: var(--omr-error); }
+.omr-toast.success { background: var(--omr-success); }
 
 /* ---------- Utility ---------- */
 

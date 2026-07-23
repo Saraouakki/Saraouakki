@@ -1,58 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Track Your Order — Varisia</title>
+<title>Suivre ma commande — Om Ritaj</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="varisia-nav">
+<header class="omr-nav">
   <div class="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
-    <a href="index.html" class="varisia-logo text-2xl"><span class="accent-v">V</span>ARISIA</a>
-    <a href="index.html#products" class="btn-varisia !py-2 !px-4 text-xs">Shop</a>
+    <a href="index.html" class="omr-logo text-2xl"><span class="accent-o">Om</span> Ritaj</a>
+    <a href="index.html#products" class="btn-omr !py-2 !px-4 text-xs">Commander</a>
   </div>
 </header>
 
 <section class="px-5 py-14 md:py-20 max-w-2xl mx-auto">
-  <h1 class="varisia-logo text-3xl md:text-4xl text-center mb-8">Track Your Order</h1>
+  <h1 class="omr-logo text-3xl md:text-4xl text-center mb-8">Suivre ma commande</h1>
 
   <div class="checkout-card p-6 md:p-8 mb-8">
-    <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Order ID</label>
+    <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Numéro de commande</label>
     <div class="flex gap-3">
-      <input type="text" id="order-id-input" class="varisia-input" placeholder="e.g. VAR-20260719-XXXX">
-      <button id="track-btn" class="btn-varisia !px-5 whitespace-nowrap">Track</button>
+      <input type="text" id="order-id-input" class="omr-input" placeholder="ex. OMR-20260719-XXXX">
+      <button id="track-btn" class="btn-omr !px-5 whitespace-nowrap">Suivre</button>
     </div>
   </div>
 
   <div id="tracking-result" class="checkout-card p-6 md:p-8 hidden">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <p class="varisia-logo text-xl" id="result-order-id"></p>
+        <p class="omr-logo text-xl" id="result-order-id"></p>
         <p class="text-sm opacity-70" id="result-product"></p>
       </div>
-      <span class="badge-varisia" id="result-status"></span>
+      <span class="badge-omr" id="result-status"></span>
     </div>
     <div id="tracking-steps"></div>
   </div>
 
-  <p id="tracking-empty" class="text-center opacity-60 text-sm hidden">No order found with that ID. Please check and try again.</p>
+  <p id="tracking-empty" class="text-center opacity-60 text-sm hidden">Aucune commande trouvée avec ce numéro. Veuillez vérifier et réessayer.</p>
 </section>
 
-<footer class="px-5 py-10" style="background: var(--varisia-nude);">
+<footer class="px-5 py-10" style="background: var(--omr-cream-dark);">
   <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-    <span class="varisia-logo text-xl"><span class="accent-v">V</span>ARISIA</span>
-    <p class="text-xs opacity-70">© 2026 Varisia. All rights reserved.</p>
-    <a href="mailto:varisia.shop@gmail.com" class="text-xs underline opacity-80">varisia.shop@gmail.com</a>
+    <span class="omr-logo text-xl"><span class="accent-o">Om</span> Ritaj</span>
+    <p class="text-xs opacity-70">© 2026 Om Ritaj. Tous droits réservés.</p>
+    <a href="https://www.instagram.com/omritaj28" target="_blank" rel="noopener" class="text-xs underline opacity-80">@omritaj28</a>
   </div>
 </footer>
 
 <script>
-const STEPS = ["Order Confirmed", "Packaged", "Handed to Courier", "Out for Delivery", "Delivered"];
+const STEPS = ["Commande confirmée", "En préparation", "Remise au livreur", "En cours de livraison", "Livrée"];
 
 async function trackOrder(orderId) {
   const resultBox = document.getElementById("tracking-result");

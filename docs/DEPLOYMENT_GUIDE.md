@@ -1,100 +1,101 @@
-# Varisia — Hostinger Deployment Guide
+# Om Ritaj — Guide de déploiement Hostinger
 
-This guide gets the full stack (`index.html`, `tracking.html`, `styles.css`, `server.js`) live on Hostinger. Because `server.js` needs to run (it's not static), you'll use Hostinger's **"Setup Node.js App"** panel — which uses the same File Manager upload flow you're used to, just with one extra step to point Hostinger at `server.js` as the entry file. This sidesteps the Git-repository requirement entirely: no Git, no CLI, no SSH needed.
+Ce guide met en ligne l'ensemble du site (`index.html`, `tracking.html`, `styles.css`, `server.js`) sur Hostinger. Comme `server.js` doit s'exécuter (ce n'est pas un site statique), tu utiliseras le panneau **"Setup Node.js App"** de Hostinger — même flux d'upload par File Manager que d'habitude, avec une étape en plus pour indiquer à Hostinger que `server.js` est le fichier de démarrage. Pas besoin de Git, ni de CLI, ni de SSH.
 
-> If your Hostinger plan doesn't show "Setup Node.js App" (it's available on Premium/Business/Cloud shared hosting and above), skip to **Option B** at the bottom for a static-only fallback.
+> Si ton offre Hostinger n'affiche pas "Setup Node.js App" (disponible sur les offres Premium/Business/Cloud et plus), passe directement à l'**Option B** plus bas (site statique uniquement).
 
 ---
 
-## Option A — Node.js App via hPanel (recommended, full automation stack)
+## Option A — Application Node.js via hPanel (recommandé, stack complète)
 
-### Step 1 — Log in and open the Node.js App manager
-1. Log in to Hostinger → **hPanel**.
-2. Go to **Advanced → Node.js** (sometimes listed as "Setup Node.js App").
-3. Click **Create Application**.
-4. Set:
-   - **Node.js version:** 18.x or later
-   - **Application root:** e.g. `varisia` (this becomes a folder under your account)
-   - **Application URL:** your domain or subdomain (e.g. `varisia.com` or a subdomain)
-   - **Application startup file:** `server.js`
-5. Click **Create**. Hostinger provisions the app and shows you the **application root path** (e.g. `/home/USERNAME/varisia`) — note it down.
+### Étape 1 — Connexion et ouverture du gestionnaire Node.js
+1. Connecte-toi à Hostinger → **hPanel**.
+2. Va dans **Avancé → Node.js** (parfois listé comme "Setup Node.js App").
+3. Clique sur **Créer une application**.
+4. Configure :
+   - **Version Node.js :** 18.x ou plus récent
+   - **Racine de l'application :** ex. `om-ritaj` (devient un dossier sous ton compte)
+   - **URL de l'application :** ton domaine ou sous-domaine (ex. `omritaj.ma`)
+   - **Fichier de démarrage de l'application :** `server.js`
+5. Clique sur **Créer**. Hostinger provisionne l'application et affiche le **chemin racine** (ex. `/home/USERNAME/om-ritaj`) — note-le.
 
-### Step 2 — Upload the files via File Manager
-1. Go to **Files → File Manager**.
-2. Navigate to the application root path from Step 1.
-3. Upload these files/folders directly into that root (drag-and-drop or the Upload button):
+### Étape 2 — Upload des fichiers via File Manager
+1. Va dans **Fichiers → Gestionnaire de fichiers**.
+2. Navigue vers le chemin racine de l'étape 1.
+3. Upload ces fichiers/dossiers directement dans cette racine (glisser-déposer ou bouton Upload) :
    - `index.html`
    - `tracking.html`
    - `styles.css`
    - `server.js`
    - `package.json`
-   - `.env.example` (optional — for reference only, don't rely on it in production)
-4. Do **not** upload `node_modules` — you'll install dependencies from the Node.js panel in Step 3.
+   - `.env.example` (optionnel — référence uniquement, ne pas s'y fier en production)
+4. **Ne pas** uploader `node_modules` — les dépendances seront installées depuis le panneau Node.js à l'étape 3.
 
-### Step 3 — Install dependencies
-1. Back in **Advanced → Node.js**, open your application.
-2. Click **Run NPM Install** (this reads `package.json` and installs `express`, `cors`, `dotenv`, `googleapis`, `twilio`).
-3. Wait for it to finish (a few seconds to a minute).
+### Étape 3 — Installer les dépendances
+1. Retourne dans **Avancé → Node.js**, ouvre ton application.
+2. Clique sur **Run NPM Install** (lit `package.json` et installe `express`, `cors`, `dotenv`, `googleapis`, `twilio`).
+3. Attends la fin (quelques secondes à une minute).
 
-### Step 4 — Set environment variables
-1. In the same Node.js app screen, find **Environment Variables**.
-2. Add each variable from `.env.example`, filled in with real values:
-   - `PORT` → leave as the value Hostinger assigns (it usually manages this automatically; if it lets you set it, use `3000`)
+### Étape 4 — Configurer les variables d'environnement
+1. Sur le même écran de l'application Node.js, trouve **Environment Variables**.
+2. Ajoute chaque variable de `.env.example`, remplie avec les vraies valeurs :
+   - `PORT` → laisse la valeur assignée par Hostinger (généralement automatique)
    - `NODE_ENV` → `production`
-   - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` (see Twilio setup below)
-   - `GOOGLE_SHEETS_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` (see Google Sheets setup below)
-   - `THREEPL_WEBHOOK_URL`, `THREEPL_API_KEY` (from your 3PL/COD partner)
-3. Click **Save**.
+   - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` (voir configuration Twilio ci-dessous)
+   - `GOOGLE_SHEETS_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` (voir configuration Google Sheets ci-dessous)
+   - `THREEPL_WEBHOOK_URL`, `THREEPL_API_KEY` (fournis par ton partenaire de livraison, ex. Amana, Speedaf, CTM)
+3. Clique sur **Enregistrer**.
 
-### Step 5 — Start the application
-1. Click **Restart** (or **Start**) on the Node.js app.
-2. Visit your domain — the Varisia landing page should load, served directly by `server.js` (it serves the static HTML/CSS itself via `express.static`).
+### Étape 5 — Démarrer l'application
+1. Clique sur **Redémarrer** (ou **Démarrer**) sur l'application Node.js.
+2. Visite ton domaine — la page Om Ritaj devrait se charger, servie directement par `server.js` (via `express.static`).
 
-**Total time: under 5 minutes** once you have the files ready.
-
----
-
-## Option B — Static-only fallback (no Node.js panel available)
-
-If your Hostinger plan is static-only:
-1. Upload `index.html`, `tracking.html`, and `styles.css` to `public_html/` via File Manager. Your landing page and checkout **UI** will work immediately.
-2. Host `server.js` separately on a Node-capable platform (Render, Railway, Fly.io — all have free tiers) and point the frontend's `fetch()` calls in `index.html`/`tracking.html` at that backend's URL instead of relative `/api/...` paths.
-3. Everything else in this guide (Twilio, Google Sheets, 3PL) applies identically to that separately hosted backend.
+**Temps total : moins de 5 minutes** une fois les fichiers prêts.
 
 ---
 
-## Setting up the automation integrations
+## Option B — Site statique uniquement (pas de panneau Node.js disponible)
 
-### Twilio (OTP verification via SMS/WhatsApp)
-1. Create a free Twilio account at twilio.com.
-2. Under **Verify → Services**, create a new Verify Service — copy its **Service SID** into `TWILIO_VERIFY_SERVICE_SID`.
-3. Copy your **Account SID** and **Auth Token** from the Twilio Console dashboard into `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN`.
-4. (Optional, for WhatsApp instead of SMS) Join the Twilio WhatsApp Sandbox or apply for a WhatsApp Business sender, then set `TWILIO_WHATSAPP_FROM`.
-5. Without any of this configured, `/api/otp/send` runs in **mock mode**: it logs the 6-digit code to the server console and returns it in the API response (only when `NODE_ENV` isn't `production`) so you can test the full checkout flow before wiring up Twilio.
-
-### Google Sheets (order log)
-1. In Google Cloud Console, create a project → enable the **Google Sheets API**.
-2. Create a **Service Account**, then generate a JSON key for it.
-3. From the JSON: copy `client_email` → `GOOGLE_SERVICE_ACCOUNT_EMAIL`, and `private_key` → `GOOGLE_PRIVATE_KEY` (keep the `\n` characters as literal text — the code un-escapes them at runtime).
-4. Create your master Google Sheet, name a tab **Orders**, and add this header row in `A1:I1`:
-   `Order ID | Date | Client Name | Verified Phone | Product | Variant | Price | Upsell Item | Order Status`
-5. Share the sheet with the service account's email (from step 3) with **Editor** access.
-6. Copy the Sheet ID from its URL (`https://docs.google.com/spreadsheets/d/<THIS_PART>/edit`) into `GOOGLE_SHEETS_ID`.
-
-### 3PL / Fulfillment webhook
-1. Get the webhook URL and API key from your chosen 3PL/COD partner (e.g. their order-intake API endpoint).
-2. Set `THREEPL_WEBHOOK_URL` and `THREEPL_API_KEY`.
-3. `server.js` POSTs a JSON payload (customer, address, SKU, COD amount) to that URL the moment an order is confirmed — see the `forwardToFulfillment()` function if your 3PL expects a different payload shape; adjust the field names there to match their API docs.
-4. If your 3PL sends status updates back (e.g. "Handed to Courier"), point their outbound webhook at `POST /api/orders/:orderId/status` with `{ "status": "Handed to Courier" }` to keep the tracking page live.
+Si ton offre Hostinger est statique uniquement :
+1. Upload `index.html`, `tracking.html` et `styles.css` dans `public_html/` via File Manager. La page d'accueil et l'**interface** de commande fonctionneront immédiatement.
+2. Héberge `server.js` séparément sur une plateforme compatible Node (Render, Railway, Fly.io — toutes ont un plan gratuit) et redirige les appels `fetch()` du frontend (`index.html`/`tracking.html`) vers l'URL de ce backend plutôt que vers des chemins relatifs `/api/...`.
+3. Le reste de ce guide (Twilio, Google Sheets, 3PL) s'applique de la même façon à ce backend hébergé séparément.
 
 ---
 
-## Testing checklist before going live
-- [ ] Load the domain — landing page renders with the nude/beige + black theme.
-- [ ] Select a product → checkout section auto-fills name, price, variants.
-- [ ] Toggle both upsells → total updates correctly.
-- [ ] Enter a real phone number → click **Verify** → receive the code (or read it from server logs in mock mode) → enter it → status turns "Verified".
-- [ ] Submit the order → confirmation screen shows an Order ID.
-- [ ] Open `tracking.html?order=<that ID>` → see the "Order Confirmed" step highlighted.
-- [ ] Check the Google Sheet — a new row appears (once credentials are configured).
-- [ ] Check your 3PL dashboard/logs — the order was received (once webhook is configured).
+## Configurer les intégrations d'automatisation
+
+### Twilio (vérification OTP par SMS/WhatsApp)
+1. Crée un compte Twilio gratuit sur twilio.com.
+2. Dans **Verify → Services**, crée un nouveau Verify Service — copie son **Service SID** dans `TWILIO_VERIFY_SERVICE_SID`.
+3. Copie ton **Account SID** et ton **Auth Token** depuis le dashboard Twilio dans `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN`.
+4. (Optionnel, pour WhatsApp plutôt que SMS) Rejoins le Twilio WhatsApp Sandbox ou demande un numéro WhatsApp Business, puis renseigne `TWILIO_WHATSAPP_FROM`.
+5. Sans configuration, `/api/otp/send` fonctionne en **mode mock** : il affiche le code à 6 chiffres dans la console serveur et le renvoie dans la réponse API (uniquement si `NODE_ENV` n'est pas `production`) pour tester le flux complet avant de configurer Twilio.
+
+### Google Sheets (journal des commandes)
+1. Dans Google Cloud Console, crée un projet → active l'**API Google Sheets**.
+2. Crée un **compte de service**, puis génère une clé JSON.
+3. Depuis le JSON : copie `client_email` → `GOOGLE_SERVICE_ACCOUNT_EMAIL`, et `private_key` → `GOOGLE_PRIVATE_KEY` (garde les `\n` tels quels, le code les convertit au démarrage).
+4. Crée ta feuille Google Sheets principale, nomme un onglet **Orders**, et ajoute cette ligne d'en-tête en `A1:J1` :
+   `Order ID | Date | Nom client | Téléphone vérifié | Ville | Produit | Poids | Total | Extra | Statut`
+5. Partage la feuille avec l'e-mail du compte de service (étape 3) en accès **Éditeur**.
+6. Copie l'ID de la feuille depuis son URL (`https://docs.google.com/spreadsheets/d/<CETTE_PARTIE>/edit`) dans `GOOGLE_SHEETS_ID`.
+
+### Webhook 3PL / Livraison
+1. Récupère l'URL du webhook et la clé API auprès de ton partenaire de livraison (ex. Amana, Speedaf, CTM).
+2. Renseigne `THREEPL_WEBHOOK_URL` et `THREEPL_API_KEY`.
+3. `server.js` envoie un payload JSON (client, adresse, produit, poids, montant à encaisser) à cette URL dès qu'une commande est confirmée — voir la fonction `forwardToFulfillment()` si ton partenaire attend un format différent.
+4. Si ton partenaire renvoie des mises à jour de statut, pointe son webhook sortant vers `POST /api/orders/:orderId/status` avec `{ "status": "Remise au livreur" }` pour garder la page de suivi à jour.
+
+---
+
+## Checklist avant la mise en ligne
+- [ ] Le domaine charge — la page d'accueil s'affiche avec le thème crème + brun.
+- [ ] Sélectionner une pâtisserie → la section commande se remplit automatiquement (nom, prix/kg).
+- [ ] Choisir un poids → le total se met à jour correctement.
+- [ ] Cocher l'emballage cadeau → le total se met à jour.
+- [ ] Entrer un vrai numéro de téléphone → cliquer sur **Vérifier** → recevoir le code (ou le lire dans les logs serveur en mode mock) → l'entrer → le statut passe à "Vérifié".
+- [ ] Valider la commande → l'écran de confirmation affiche un numéro de commande (`OMR-...`).
+- [ ] Ouvrir `tracking.html?order=<ce numéro>` → voir l'étape "Commande confirmée" en surbrillance.
+- [ ] Vérifier la Google Sheet — une nouvelle ligne apparaît (une fois les identifiants configurés).
+- [ ] Vérifier le tableau de bord/logs du partenaire de livraison — la commande a bien été reçue (une fois le webhook configuré).
