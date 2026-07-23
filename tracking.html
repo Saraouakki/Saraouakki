@@ -66,7 +66,8 @@ async function trackOrder(orderId) {
     const data = await res.json();
 
     document.getElementById("result-order-id").textContent = data.orderId;
-    document.getElementById("result-product").textContent = `${data.productName} · ${data.variant}`;
+    const itemsSummary = (data.items || []).map(i => `${i.name} (${i.variant})`).join(", ");
+    document.getElementById("result-product").textContent = `${itemsSummary} · ${data.total} Dhs`;
     document.getElementById("result-status").textContent = data.currentStatus;
 
     const currentIndex = STEPS.indexOf(data.currentStatus);

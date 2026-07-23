@@ -8,7 +8,7 @@ Pâtisserie marocaine artisanale, faite maison — vendue au kilo avec paiement 
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | Page d'accueil, carte des pâtisseries, commande en 1 page (poids au kg), vérification OTP, option emballage cadeau |
+| `index.html` | Page d'accueil, carte des pâtisseries, plateau personnalisé (تشكيلة), panier multi-produits, galerie, commande (poids au kg, frais de livraison, note, OTP, emballage cadeau) |
 | `tracking.html` | Page de suivi de commande pour les clients |
 | `styles.css` | Thème Om Ritaj (couleurs, typographie, composants) |
 | `server.js` | Backend Express : OTP, prise de commande, sync Google Sheets, webhook livraison, suivi de commande |

@@ -76,8 +76,8 @@ Si ton offre Hostinger est statique uniquement :
 1. Dans Google Cloud Console, crée un projet → active l'**API Google Sheets**.
 2. Crée un **compte de service**, puis génère une clé JSON.
 3. Depuis le JSON : copie `client_email` → `GOOGLE_SERVICE_ACCOUNT_EMAIL`, et `private_key` → `GOOGLE_PRIVATE_KEY` (garde les `\n` tels quels, le code les convertit au démarrage).
-4. Crée ta feuille Google Sheets principale, nomme un onglet **Orders**, et ajoute cette ligne d'en-tête en `A1:J1` :
-   `Order ID | Date | Nom client | Téléphone vérifié | Ville | Produit | Poids | Total | Extra | Statut`
+4. Crée ta feuille Google Sheets principale, nomme un onglet **Orders**, et ajoute cette ligne d'en-tête en `A1:L1` :
+   `Order ID | Date | Nom client | Téléphone vérifié | Ville | Articles | Sous-total | Frais de livraison | Extra | Total | Note | Statut`
 5. Partage la feuille avec l'e-mail du compte de service (étape 3) en accès **Éditeur**.
 6. Copie l'ID de la feuille depuis son URL (`https://docs.google.com/spreadsheets/d/<CETTE_PARTIE>/edit`) dans `GOOGLE_SHEETS_ID`.
 

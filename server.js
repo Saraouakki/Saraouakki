@@ -165,9 +165,11 @@ async function appendOrderToSheet(order) {
 
   const sheets = google.sheets({ version: 'v4', auth });
 
+  const itemsSummary = order.items.map(i => `${i.name} (${i.variant}) — ${i.lineTotal} Dhs`).join(' | ');
+
   await sheets.spreadsheets.values.append({
     spreadsheetId: GOOGLE_SHEETS_ID,
-    range: 'Orders!A:J',
+    range: 'Orders!A:L',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [[
@@ -176,10 +178,12 @@ async function appendOrderToSheet(order) {
         order.fullName,
         order.phone,
         order.city,
-        order.productName,
-        order.variant,
-        order.total,
+        itemsSummary,
+        order.subtotal,
+        order.deliveryFee,
         order.upsells.join(', '),
+        order.total,
+        order.note || '',
         order.status
       ]]
     }
@@ -212,9 +216,9 @@ async function forwardToFulfillment(order) {
       phone: order.phone,
       city: order.city,
       address: order.address,
-      sku: order.productId,
-      variant: order.variant,
-      weight_kg: order.weightKg,
+      note: order.note,
+      items: order.items,
+      delivery_fee: order.deliveryFee,
       cod_amount: order.total,
       upsells: order.upsells
     })
@@ -230,12 +234,12 @@ async function forwardToFulfillment(order) {
 app.post('/api/orders', async (req, res) => {
   try {
     const {
-      fullName, phone, city, address,
-      productId, productName, variant, weightKg,
-      price, upsells, total, otpRequestId
+      fullName, phone, city, address, note,
+      items, subtotal, deliveryFee,
+      upsells, total, otpRequestId
     } = req.body;
 
-    if (!fullName || !phone || !city || !address || !productId) {
+    if (!fullName || !phone || !city || !address || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'Missing required order fields.' });
     }
     if (!isPhoneVerified(phone, otpRequestId)) {
@@ -252,13 +256,12 @@ app.post('/api/orders', async (req, res) => {
       phone,
       city,
       address,
-      productId,
-      productName: productName || productId,
-      variant: variant || 'Standard',
-      weightKg: Number(weightKg) || 0,
-      price: Number(price) || 0,
+      note: note || '',
+      items,
+      subtotal: Number(subtotal) || 0,
+      deliveryFee: Number(deliveryFee) || 0,
       upsells: Array.isArray(upsells) ? upsells : [],
-      total: Number(total) || Number(price) || 0,
+      total: Number(total) || 0,
       status: STATUS_FLOW[0],
       history: { [STATUS_FLOW[0]]: now }
     };
@@ -296,8 +299,8 @@ app.get('/api/orders/:orderId/tracking', (req, res) => {
 
   res.json({
     orderId: order.orderId,
-    productName: order.productName,
-    variant: order.variant,
+    items: order.items,
+    total: order.total,
     currentStatus: order.status,
     statusFlow: STATUS_FLOW,
     history: order.history

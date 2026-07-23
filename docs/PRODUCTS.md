@@ -18,7 +18,26 @@ Tous les prix sont **au kilo (Dhs/kg)**, conformes à la liste de prix fournie. 
 
 ## Poids proposés au client
 
-Le site propose des lots de **500 g / 1 kg / 1.5 kg / 2 kg / 3 kg**, avec le total calculé automatiquement (`prix au kg × poids`). Ajuste la liste `WEIGHT_OPTIONS` dans `index.html` si d'autres formats sont nécessaires (ex. 250 g, plateaux mixtes).
+Le site propose des lots de **500 g / 1 kg / 1.5 kg / 2 kg / 3 kg**, avec le total calculé automatiquement (`prix au kg × poids`). Ajuste la liste `WEIGHT_OPTIONS` dans `index.html` si d'autres formats sont nécessaires (ex. 250 g).
+
+## Panier multi-produits
+
+Le client peut ajouter plusieurs pâtisseries (chacune avec son propre poids) dans un seul panier avant de passer commande — plus besoin de repasser commande pour chaque type de gâteau.
+
+## Plateau personnalisé (تشكيلة)
+
+Le client choisit un poids total (1 kg à 3 kg), puis répartit ce poids entre les pâtisseries de son choix par pas de 250 g. Le prix du plateau est calculé automatiquement au **prix moyen pondéré** des pâtisseries sélectionnées (`Σ(poids_i × prix_i) / poids total`) — aucun prix fixe à gérer manuellement.
+
+## Frais de livraison
+
+- **El Jadida** : livraison incluse dans le prix des pâtisseries (0 Dhs de frais supplémentaires).
+- **Autre ville** : +35 Dhs de frais de livraison, ajoutés au total de la commande.
+
+Cette règle est codée dans la constante `DELIVERY_FEE_OTHER_CITY` (`index.html`) — modifie-la si les tarifs changent, ou étends la liste de villes dans `#city-select` si tu veux des tarifs différents par ville.
+
+## Note de commande
+
+Un champ optionnel permet au client d'indiquer des allergies, un message à écrire sur un gâteau, ou des instructions de livraison — transmis avec la commande (`note`) et visible dans le journal Google Sheets.
 
 ## À compléter avant la mise en ligne
 

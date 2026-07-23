@@ -57,6 +57,19 @@ body {
   border-bottom: 1px solid rgba(74, 44, 29, 0.08);
 }
 
+.promo-bar {
+  background: var(--omr-gold);
+  color: var(--omr-brown);
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+.promo-bar a {
+  text-decoration: underline;
+}
+
 /* ---------- Buttons ---------- */
 
 .btn-omr {
@@ -268,6 +281,110 @@ body {
 .order-total-bar {
   border-top: 1px solid rgba(74, 44, 29, 0.12);
   padding-top: 1rem;
+}
+
+/* ---------- Cart ---------- */
+
+.cart-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  background: var(--omr-cream);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(74, 44, 29, 0.08);
+}
+
+.cart-remove-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 44, 29, 0.25);
+  background: var(--omr-white);
+  color: var(--omr-brown);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cart-remove-btn:hover {
+  background: var(--omr-error);
+  border-color: var(--omr-error);
+  color: var(--omr-white);
+}
+
+/* ---------- Plateau Personnalisé ---------- */
+
+.plateau-weight-btn {
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 44, 29, 0.25);
+  background: var(--omr-white);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plateau-weight-btn:hover {
+  border-color: var(--omr-brown);
+}
+
+.plateau-weight-btn.active {
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
+  border-color: var(--omr-brown);
+}
+
+.plateau-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+}
+
+.stepper-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 44, 29, 0.3);
+  background: var(--omr-white);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: var(--omr-brown);
+  color: var(--omr-cream-light);
+  border-color: var(--omr-brown);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.plateau-qty {
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ---------- Gallery ---------- */
+
+.gallery-tile {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, var(--omr-cream-dark) 0%, var(--omr-gold-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(74, 44, 29, 0.08);
 }
 
 /* ---------- Tracking Page ---------- */

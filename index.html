@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Om Ritaj — Pâtisserie Marocaine Artisanale</title>
-<meta name="description" content="Om Ritaj — pâtisseries et douceurs marocaines faites maison, vendues au kilo, livrées avec paiement à la livraison." />
+<meta name="description" content="Om Ritaj — pâtisseries et douceurs marocaines faites maison, vendues au kilo, plateaux personnalisés, livrées avec paiement à la livraison." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -14,15 +14,21 @@
 
 <!-- ================= NAV ================= -->
 <header class="omr-nav sticky top-0 z-50">
+  <div class="promo-bar">
+    🎉 Nouveau : composez votre <a href="#plateau">plateau personnalisé (تشكيلة)</a> — mélangez vos pâtisseries préférées
+  </div>
   <div class="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
     <a href="#top" class="omr-logo text-2xl"><span class="accent-o">Om</span> Ritaj</a>
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+    <nav class="hidden md:flex items-center gap-7 text-sm font-medium">
       <a href="#products" class="hover:opacity-60">Nos Pâtisseries</a>
-      <a href="#checkout" class="hover:opacity-60">Commander</a>
+      <a href="#plateau" class="hover:opacity-60">Plateau Personnalisé</a>
+      <a href="#gallery" class="hover:opacity-60">Galerie</a>
       <a href="tracking.html" class="hover:opacity-60">Suivre ma commande</a>
       <a href="https://www.instagram.com/omritaj28" target="_blank" rel="noopener" class="hover:opacity-60">Instagram</a>
     </nav>
-    <a href="#checkout" class="btn-omr !py-2 !px-4 text-xs">Commander</a>
+    <button type="button" id="cart-nav-btn" class="btn-omr !py-2 !px-4 text-xs whitespace-nowrap">
+      Panier (<span id="cart-count">0</span>)
+    </button>
   </div>
 </header>
 
@@ -35,9 +41,9 @@
       <p class="mt-5 text-base md:text-lg opacity-80 max-w-md">Pâtisseries et douceurs marocaines traditionnelles, préparées à la maison avec des ingrédients de qualité — vendues au kilo, comme sur notre page <a href="https://www.instagram.com/omritaj28" target="_blank" rel="noopener" class="underline">@omritaj28</a>.</p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="#products" class="btn-omr">Voir la carte</a>
-        <a href="tracking.html" class="btn-omr btn-omr-outline">Suivre ma commande</a>
+        <a href="#plateau" class="btn-omr btn-omr-outline">Composer un plateau</a>
       </div>
-      <div class="mt-8 flex items-center gap-6 text-xs uppercase tracking-wide opacity-70">
+      <div class="mt-8 flex items-center gap-6 text-xs uppercase tracking-wide opacity-70 flex-wrap">
         <span>✓ Paiement à la livraison</span>
         <span>✓ Préparé à la commande</span>
         <span>✓ Vendu au kilo</span>
@@ -55,10 +61,50 @@
 <section id="products" class="px-5 py-16 md:py-24 max-w-6xl mx-auto">
   <div class="text-center mb-12">
     <h2 class="omr-logo text-3xl md:text-4xl">Notre Carte</h2>
-    <p class="opacity-70 mt-3">Tous nos prix sont indiqués au kilo. Choisissez le poids lors de votre commande.</p>
+    <p class="opacity-70 mt-3">Tous nos prix sont indiqués au kilo. Choisissez le poids et ajoutez au panier.</p>
+    <p class="opacity-70 mt-1 text-sm">Vous préférez un assortiment ? <a href="#plateau" class="underline font-medium">Composez votre plateau personnalisé →</a></p>
   </div>
 
   <div id="product-grid" class="grid sm:grid-cols-2 md:grid-cols-3 gap-7"></div>
+</section>
+
+<!-- ================= PLATEAU PERSONNALISÉ ================= -->
+<section id="plateau" class="px-5 py-16 md:py-24 max-w-4xl mx-auto">
+  <div class="text-center mb-10">
+    <h2 class="omr-logo text-3xl md:text-4xl">Composez votre Plateau <span class="opacity-60">(تشكيلة)</span></h2>
+    <p class="opacity-70 mt-3">Choisissez un poids total, puis répartissez-le entre vos pâtisseries préférées. Le prix est calculé automatiquement au prix moyen pondéré des gâteaux choisis.</p>
+  </div>
+
+  <div class="checkout-card p-6 md:p-9">
+    <label class="block text-xs uppercase tracking-wide font-semibold mb-3 opacity-70">Poids total du plateau</label>
+    <div id="plateau-weight-options" class="flex flex-wrap gap-2 mb-6"></div>
+
+    <div class="flex items-center justify-between mb-4 p-3 rounded-lg" style="background: var(--omr-cream);">
+      <span class="text-sm font-medium">Reste à répartir</span>
+      <span id="plateau-remaining" class="omr-logo text-lg">1 kg</span>
+    </div>
+
+    <div id="plateau-items" class="divide-y" style="border-color: rgba(74,44,29,0.08);"></div>
+
+    <div class="order-total-bar flex items-center justify-between mt-6">
+      <span class="text-sm uppercase tracking-wide opacity-70">Prix du plateau (moyenne pondérée)</span>
+      <span id="plateau-price" class="omr-logo text-2xl">0 Dhs</span>
+    </div>
+
+    <button type="button" id="plateau-add-btn" class="btn-omr w-full text-sm mt-6" disabled>
+      Ajouter le plateau au panier
+    </button>
+    <p id="plateau-hint" class="text-xs text-center opacity-60 mt-3">Répartissez tout le poids choisi entre au moins une pâtisserie pour l'ajouter au panier.</p>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section id="gallery" class="px-5 py-16 md:py-20 max-w-6xl mx-auto">
+  <div class="text-center mb-10">
+    <h2 class="omr-logo text-3xl md:text-4xl">Galerie</h2>
+    <p class="opacity-70 mt-3">Un aperçu de nos créations — plus de photos sur <a href="https://www.instagram.com/omritaj28" target="_blank" rel="noopener" class="underline">@omritaj28</a></p>
+  </div>
+  <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 </section>
 
 <!-- ================= TRUST / HOW IT WORKS ================= -->
@@ -66,7 +112,7 @@
   <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 text-center">
     <div>
       <p class="text-2xl mb-1">1</p>
-      <p class="text-sm opacity-80">Choisissez vos pâtisseries et le poids souhaité</p>
+      <p class="text-sm opacity-80">Choisissez vos pâtisseries ou composez un plateau</p>
     </div>
     <div>
       <p class="text-2xl mb-1">2</p>
@@ -83,31 +129,33 @@
   </div>
 </section>
 
-<!-- ================= CHECKOUT ================= -->
-<section id="checkout" class="px-5 py-16 md:py-24 max-w-3xl mx-auto">
+<!-- ================= CART / CHECKOUT ================= -->
+<section id="cart" class="px-5 py-16 md:py-24 max-w-3xl mx-auto">
   <div class="text-center mb-10">
-    <h2 class="omr-logo text-3xl md:text-4xl">Finaliser ma commande</h2>
-    <p class="opacity-70 mt-3">Une seule page. Pas de compte. Paiement à la livraison.</p>
+    <h2 class="omr-logo text-3xl md:text-4xl">Mon Panier</h2>
+    <p class="opacity-70 mt-3">Vérifiez votre commande, puis finalisez-la. Pas de compte. Paiement à la livraison.</p>
   </div>
 
-  <form id="checkout-form" class="checkout-card p-6 md:p-9 space-y-7">
-
-    <!-- Selected product summary -->
-    <div>
-      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Votre sélection</label>
-      <div id="selected-product-summary" class="flex items-center justify-between border rounded-lg p-4" style="border-color: rgba(74,44,29,0.12); background: var(--omr-cream);">
-        <span id="selected-product-name" class="font-medium">Choisissez une pâtisserie ci-dessus</span>
-        <span id="selected-product-price" class="omr-logo text-lg"></span>
-      </div>
-      <input type="hidden" id="product-id" name="productId" required>
-      <div class="field-error" id="err-product">Veuillez choisir une pâtisserie dans la carte.</div>
+  <div class="checkout-card p-6 md:p-9 mb-6">
+    <div id="cart-empty" class="text-center py-8 opacity-60 text-sm">
+      Votre panier est vide. Ajoutez des pâtisseries depuis <a href="#products" class="underline">la carte</a> ou composez un <a href="#plateau" class="underline">plateau personnalisé</a>.
     </div>
+    <div id="cart-items" class="space-y-4 hidden"></div>
+  </div>
 
-    <!-- Weight -->
-    <div id="variant-wrapper" class="hidden">
-      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Poids souhaité</label>
-      <select id="variant" name="variant" class="omr-input">
+  <form id="checkout-form" class="checkout-card p-6 md:p-9 space-y-7 hidden">
+
+    <!-- Ville / Livraison -->
+    <div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Ville de livraison</label>
+      <select id="city-select" class="omr-input">
+        <option value="El Jadida">El Jadida (livraison incluse)</option>
+        <option value="Autre">Autre ville (+35 Dhs de livraison)</option>
       </select>
+      <div id="city-other-wrapper" class="mt-3 hidden">
+        <input type="text" id="city-other" class="omr-input" placeholder="Nom de votre ville">
+        <div class="field-error" id="err-city-other">Veuillez indiquer le nom de votre ville.</div>
+      </div>
     </div>
 
     <!-- Contact details -->
@@ -118,16 +166,16 @@
         <div class="field-error" id="err-name">Veuillez indiquer votre nom complet.</div>
       </div>
       <div>
-        <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Ville</label>
-        <input type="text" id="city" name="city" class="omr-input" placeholder="ex. Casablanca" required>
-        <div class="field-error" id="err-city">Veuillez indiquer votre ville.</div>
+        <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Adresse de livraison</label>
+        <input type="text" id="address" name="address" class="omr-input" placeholder="Rue, quartier, numéro" required>
+        <div class="field-error" id="err-address">Veuillez indiquer votre adresse de livraison.</div>
       </div>
     </div>
 
+    <!-- Order note -->
     <div>
-      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Adresse de livraison</label>
-      <input type="text" id="address" name="address" class="omr-input" placeholder="Rue, quartier, numéro" required>
-      <div class="field-error" id="err-address">Veuillez indiquer votre adresse de livraison.</div>
+      <label class="block text-xs uppercase tracking-wide font-semibold mb-2 opacity-70">Note de commande (optionnel)</label>
+      <textarea id="order-note" class="omr-input" rows="3" placeholder="Allergies, message sur le gâteau, instructions de livraison..."></textarea>
     </div>
 
     <!-- ============ PHONE + OTP VERIFICATION BLOCK ============ -->
@@ -173,7 +221,22 @@
       </div>
     </div>
 
-    <!-- Order total -->
+    <!-- Order total breakdown -->
+    <div class="space-y-2 text-sm">
+      <div class="flex items-center justify-between opacity-80">
+        <span>Sous-total pâtisseries</span>
+        <span id="summary-subtotal">0 Dhs</span>
+      </div>
+      <div class="flex items-center justify-between opacity-80">
+        <span>Frais de livraison</span>
+        <span id="summary-delivery">Inclus</span>
+      </div>
+      <div class="flex items-center justify-between opacity-80 hidden" id="summary-gift-row">
+        <span>Emballage cadeau</span>
+        <span id="summary-gift">15 Dhs</span>
+      </div>
+    </div>
+
     <div class="order-total-bar flex items-center justify-between">
       <span class="text-sm uppercase tracking-wide opacity-70">Total dû à la livraison</span>
       <span id="order-total" class="omr-logo text-2xl">0 Dhs</span>
@@ -229,13 +292,20 @@ const WEIGHT_OPTIONS = [
   { label: "3 kg", kg: 3 }
 ];
 
+const PLATEAU_STEP_KG = 0.25;
+const GIFT_PRICE = 15;
+const DELIVERY_FEE_OTHER_CITY = 35;
+
 const state = {
-  product: null,
-  weightKg: WEIGHT_OPTIONS[1].kg,
+  cart: [], // { cartId, name, nameAr, variant, weightKg, pricePerKg, lineTotal, composition? }
   upsells: { gift: false },
   otpVerified: false,
-  otpRequestId: null
+  otpRequestId: null,
+  plateau: { targetKg: WEIGHT_OPTIONS[1].kg, allocations: {} }
 };
+
+function round2(n) { return Math.round(n * 100) / 100; }
+function roundDhs(n) { return Math.round(n); }
 
 /* ---------- Render product grid ---------- */
 const grid = document.getElementById("product-grid");
@@ -250,10 +320,15 @@ PRODUCTS.forEach(p => {
     <div class="p-5">
       <p class="omr-logo text-xl">${p.name}</p>
       <p class="text-xs opacity-60 mt-0.5">${p.nameAr}</p>
-      <p class="text-sm opacity-70 mt-1 mb-4">${p.tagline}</p>
-      <div class="flex items-center justify-between">
+      <p class="text-sm opacity-70 mt-1 mb-3">${p.tagline}</p>
+      <div class="flex items-center justify-between mb-3">
         <span class="price-tag">${p.pricePerKg} Dhs / kg</span>
-        <button type="button" class="btn-omr !py-2 !px-4 text-xs select-product-btn">Choisir</button>
+      </div>
+      <div class="flex gap-2">
+        <select class="omr-input !py-2 !text-xs weight-select" style="flex:1">
+          ${WEIGHT_OPTIONS.map(w => `<option value="${w.kg}" ${w.kg === 1 ? "selected" : ""}>${w.label}</option>`).join("")}
+        </select>
+        <button type="button" class="btn-omr !py-2 !px-3 text-xs add-to-cart-btn whitespace-nowrap">Ajouter</button>
       </div>
     </div>
   `;
@@ -261,40 +336,221 @@ PRODUCTS.forEach(p => {
 });
 
 grid.addEventListener("click", (e) => {
-  const btn = e.target.closest(".select-product-btn");
+  const btn = e.target.closest(".add-to-cart-btn");
   if (!btn) return;
   const card = btn.closest(".product-card");
-  selectProduct(card.dataset.id);
-  document.getElementById("checkout").scrollIntoView({ behavior: "smooth" });
-});
+  const product = PRODUCTS.find(p => p.id === card.dataset.id);
+  const weightKg = Number(card.querySelector(".weight-select").value);
+  const weightLabel = WEIGHT_OPTIONS.find(w => w.kg === weightKg)?.label || `${weightKg} kg`;
 
-function selectProduct(id) {
-  const product = PRODUCTS.find(p => p.id === id);
-  if (!product) return;
-  state.product = product;
-
-  document.querySelectorAll(".product-card").forEach(c => {
-    c.classList.toggle("selected", c.dataset.id === id);
+  addToCart({
+    cartId: crypto.randomUUID(),
+    name: product.name,
+    nameAr: product.nameAr,
+    variant: weightLabel,
+    weightKg,
+    pricePerKg: product.pricePerKg,
+    lineTotal: roundDhs(product.pricePerKg * weightKg)
   });
 
-  document.getElementById("product-id").value = product.id;
-  document.getElementById("selected-product-name").textContent = `${product.name} — ${product.tagline}`;
-  document.getElementById("selected-product-price").textContent = `${product.pricePerKg} Dhs/kg`;
-  document.getElementById("err-product").classList.remove("show");
+  showToast(`${product.name} ajouté au panier.`, "success");
+});
 
-  const variantWrapper = document.getElementById("variant-wrapper");
-  const variantSelect = document.getElementById("variant");
-  variantSelect.innerHTML = WEIGHT_OPTIONS.map(w => `<option value="${w.kg}">${w.label}</option>`).join("");
-  variantSelect.value = state.weightKg;
-  variantWrapper.classList.remove("hidden");
+/* ---------- Gallery placeholders ---------- */
+const galleryGrid = document.getElementById("gallery-grid");
+const galleryIcons = ["◧", "◈", "◇", "☾", "❖", "◑"];
+galleryIcons.forEach(icon => {
+  const div = document.createElement("div");
+  div.className = "gallery-tile";
+  div.innerHTML = `<span class="omr-logo text-4xl" style="color: var(--omr-brown);">${icon}</span>`;
+  galleryGrid.appendChild(div);
+});
+
+/* ---------- Plateau builder ---------- */
+const plateauWeightOptions = document.getElementById("plateau-weight-options");
+WEIGHT_OPTIONS.filter(w => w.kg >= 1).forEach(w => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "plateau-weight-btn" + (w.kg === state.plateau.targetKg ? " active" : "");
+  btn.textContent = w.label;
+  btn.dataset.kg = w.kg;
+  plateauWeightOptions.appendChild(btn);
+});
+
+plateauWeightOptions.addEventListener("click", (e) => {
+  const btn = e.target.closest(".plateau-weight-btn");
+  if (!btn) return;
+  state.plateau.targetKg = Number(btn.dataset.kg);
+  state.plateau.allocations = {};
+  plateauWeightOptions.querySelectorAll(".plateau-weight-btn").forEach(b => b.classList.toggle("active", b === btn));
+  renderPlateau();
+});
+
+const plateauItems = document.getElementById("plateau-items");
+PRODUCTS.forEach(p => {
+  const row = document.createElement("div");
+  row.className = "plateau-row";
+  row.dataset.id = p.id;
+  row.innerHTML = `
+    <div>
+      <p class="text-sm font-medium">${p.name} <span class="opacity-50 text-xs">(${p.nameAr})</span></p>
+      <p class="text-xs opacity-60">${p.pricePerKg} Dhs/kg</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button type="button" class="stepper-btn plateau-minus">−</button>
+      <span class="plateau-qty">0 kg</span>
+      <button type="button" class="stepper-btn plateau-plus">+</button>
+    </div>
+  `;
+  plateauItems.appendChild(row);
+});
+
+plateauItems.addEventListener("click", (e) => {
+  const row = e.target.closest(".plateau-row");
+  if (!row) return;
+  const id = row.dataset.id;
+  const current = state.plateau.allocations[id] || 0;
+  const allocated = Object.values(state.plateau.allocations).reduce((a, b) => a + b, 0);
+  const remaining = round2(state.plateau.targetKg - allocated);
+
+  if (e.target.closest(".plateau-plus")) {
+    if (remaining >= PLATEAU_STEP_KG - 0.001) {
+      state.plateau.allocations[id] = round2(current + PLATEAU_STEP_KG);
+    }
+  } else if (e.target.closest(".plateau-minus")) {
+    if (current > 0) {
+      state.plateau.allocations[id] = round2(current - PLATEAU_STEP_KG);
+      if (state.plateau.allocations[id] <= 0) delete state.plateau.allocations[id];
+    }
+  } else {
+    return;
+  }
+  renderPlateau();
+});
+
+function renderPlateau() {
+  const allocated = round2(Object.values(state.plateau.allocations).reduce((a, b) => a + b, 0));
+  const remaining = round2(state.plateau.targetKg - allocated);
+  const totalPrice = PRODUCTS.reduce((sum, p) => sum + (state.plateau.allocations[p.id] || 0) * p.pricePerKg, 0);
+
+  document.getElementById("plateau-remaining").textContent = `${remaining} kg`;
+  document.getElementById("plateau-price").textContent = `${roundDhs(totalPrice)} Dhs`;
+
+  plateauItems.querySelectorAll(".plateau-row").forEach(row => {
+    const id = row.dataset.id;
+    const qty = state.plateau.allocations[id] || 0;
+    row.querySelector(".plateau-qty").textContent = `${qty} kg`;
+    row.querySelector(".plateau-plus").disabled = remaining < PLATEAU_STEP_KG - 0.001;
+    row.querySelector(".plateau-minus").disabled = qty <= 0;
+  });
+
+  const addBtn = document.getElementById("plateau-add-btn");
+  const canAdd = remaining <= 0.001 && allocated > 0;
+  addBtn.disabled = !canAdd;
+  document.getElementById("plateau-hint").textContent = canAdd
+    ? "Votre plateau est prêt à être ajouté au panier."
+    : "Répartissez tout le poids choisi entre au moins une pâtisserie pour l'ajouter au panier.";
+}
+
+document.getElementById("plateau-add-btn").addEventListener("click", () => {
+  const composition = Object.entries(state.plateau.allocations)
+    .filter(([, kg]) => kg > 0)
+    .map(([id, kg]) => {
+      const p = PRODUCTS.find(pp => pp.id === id);
+      return { name: p.name, nameAr: p.nameAr, weightKg: kg };
+    });
+  if (!composition.length) return;
+
+  const totalPrice = composition.reduce((sum, c) => {
+    const p = PRODUCTS.find(pp => pp.name === c.name);
+    return sum + c.weightKg * p.pricePerKg;
+  }, 0);
+
+  addToCart({
+    cartId: crypto.randomUUID(),
+    name: "Plateau Personnalisé",
+    nameAr: "تشكيلة",
+    variant: `${state.plateau.targetKg} kg — ${composition.map(c => c.name).join(", ")}`,
+    weightKg: state.plateau.targetKg,
+    pricePerKg: round2(totalPrice / state.plateau.targetKg),
+    lineTotal: roundDhs(totalPrice),
+    composition
+  });
+
+  showToast("Plateau personnalisé ajouté au panier.", "success");
+  state.plateau.allocations = {};
+  renderPlateau();
+});
+
+renderPlateau();
+
+/* ---------- Cart ---------- */
+function addToCart(line) {
+  state.cart.push(line);
+  renderCart();
+  document.getElementById("cart").scrollIntoView({ behavior: "smooth" });
+}
+
+function removeFromCart(cartId) {
+  state.cart = state.cart.filter(l => l.cartId !== cartId);
+  renderCart();
+}
+
+function cartSubtotal() {
+  return state.cart.reduce((sum, l) => sum + l.lineTotal, 0);
+}
+
+function renderCart() {
+  const cartItemsEl = document.getElementById("cart-items");
+  const cartEmptyEl = document.getElementById("cart-empty");
+  const checkoutForm = document.getElementById("checkout-form");
+  const cartCount = document.getElementById("cart-count");
+
+  cartCount.textContent = state.cart.length;
+
+  if (!state.cart.length) {
+    cartItemsEl.classList.add("hidden");
+    cartEmptyEl.classList.remove("hidden");
+    checkoutForm.classList.add("hidden");
+    updateTotal();
+    return;
+  }
+
+  cartEmptyEl.classList.add("hidden");
+  cartItemsEl.classList.remove("hidden");
+  checkoutForm.classList.remove("hidden");
+
+  cartItemsEl.innerHTML = state.cart.map(line => `
+    <div class="cart-line">
+      <div>
+        <p class="font-medium text-sm">${line.name}${line.nameAr ? ` <span class="opacity-50 text-xs">(${line.nameAr})</span>` : ""}</p>
+        <p class="text-xs opacity-60 mt-0.5">${line.variant}</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="omr-logo text-base">${line.lineTotal} Dhs</span>
+        <button type="button" class="cart-remove-btn" data-id="${line.cartId}" aria-label="Retirer">✕</button>
+      </div>
+    </div>
+  `).join("");
+
+  cartItemsEl.querySelectorAll(".cart-remove-btn").forEach(btn => {
+    btn.addEventListener("click", () => removeFromCart(btn.dataset.id));
+  });
 
   updateTotal();
 }
 
-document.getElementById("variant").addEventListener("change", (e) => {
-  state.weightKg = Number(e.target.value);
+/* ---------- Delivery / city ---------- */
+const citySelect = document.getElementById("city-select");
+const cityOtherWrapper = document.getElementById("city-other-wrapper");
+citySelect.addEventListener("change", () => {
+  cityOtherWrapper.classList.toggle("hidden", citySelect.value !== "Autre");
   updateTotal();
 });
+
+function currentDeliveryFee() {
+  return citySelect.value === "Autre" ? DELIVERY_FEE_OTHER_CITY : 0;
+}
 
 /* ---------- Upsell widget ---------- */
 document.querySelectorAll(".upsell-item").forEach(item => {
@@ -312,12 +568,18 @@ document.querySelectorAll(".upsell-item").forEach(item => {
 });
 
 function updateTotal() {
-  let total = state.product ? Math.round(state.product.pricePerKg * state.weightKg) : 0;
-  document.querySelectorAll(".upsell-item").forEach(item => {
-    const checkbox = item.querySelector("input[type=checkbox]");
-    if (checkbox.checked) total += Number(item.dataset.price);
-  });
+  const subtotal = cartSubtotal();
+  const delivery = currentDeliveryFee();
+  const gift = state.upsells.gift ? GIFT_PRICE : 0;
+  const total = subtotal + delivery + gift;
+
+  document.getElementById("summary-subtotal").textContent = `${subtotal} Dhs`;
+  document.getElementById("summary-delivery").textContent = delivery > 0 ? `${delivery} Dhs` : "Inclus";
+  document.getElementById("summary-gift-row").classList.toggle("hidden", !state.upsells.gift);
+  document.getElementById("summary-gift").textContent = `${GIFT_PRICE} Dhs`;
   document.getElementById("order-total").textContent = `${total} Dhs`;
+
+  document.getElementById("place-order-btn").disabled = !(state.cart.length && state.otpVerified);
 }
 
 /* ---------- OTP verification flow ---------- */
@@ -391,8 +653,8 @@ verifyOtpBtn.addEventListener("click", async () => {
     otpStatus.classList.remove("unverified");
     otpStatus.classList.add("verified");
     otpStatus.innerHTML = `<span class="dot"></span> Vérifié`;
-    placeOrderBtn.disabled = false;
     showToast("Numéro vérifié.", "success");
+    updateTotal();
   } catch (err) {
     showToast(err.message, "error");
   } finally {
@@ -415,15 +677,22 @@ function startResendTimer() {
   }, 1000);
 }
 
+/* ---------- Cart nav button ---------- */
+document.getElementById("cart-nav-btn").addEventListener("click", () => {
+  document.getElementById("cart").scrollIntoView({ behavior: "smooth" });
+});
+
 /* ---------- Form submission ---------- */
 document.getElementById("checkout-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let valid = true;
-  if (!state.product) { showFieldError("err-product", true); valid = false; }
+  if (!state.cart.length) { showToast("Votre panier est vide.", "error"); valid = false; }
   if (!document.getElementById("full-name").value.trim()) { showFieldError("err-name", true); valid = false; }
-  if (!document.getElementById("city").value.trim()) { showFieldError("err-city", true); valid = false; }
   if (!document.getElementById("address").value.trim()) { showFieldError("err-address", true); valid = false; }
+  if (citySelect.value === "Autre" && !document.getElementById("city-other").value.trim()) {
+    showFieldError("err-city-other", true); valid = false;
+  }
   if (!state.otpVerified) { showToast("Veuillez vérifier votre numéro de téléphone.", "error"); valid = false; }
   if (!valid) return;
 
@@ -433,20 +702,22 @@ document.getElementById("checkout-form").addEventListener("submit", async (e) =>
   const upsellLabels = [];
   if (state.upsells.gift) upsellLabels.push("Emballage cadeau");
 
-  const variantLabel = WEIGHT_OPTIONS.find(w => w.kg === state.weightKg)?.label || `${state.weightKg} kg`;
+  const city = citySelect.value === "Autre" ? document.getElementById("city-other").value.trim() : "El Jadida";
+  const deliveryFee = currentDeliveryFee();
+  const subtotal = cartSubtotal();
+  const total = subtotal + deliveryFee + (state.upsells.gift ? GIFT_PRICE : 0);
 
   const payload = {
     fullName: document.getElementById("full-name").value.trim(),
     phone: document.getElementById("phone").value.trim(),
-    city: document.getElementById("city").value.trim(),
+    city,
     address: document.getElementById("address").value.trim(),
-    productId: state.product.id,
-    productName: state.product.name,
-    variant: variantLabel,
-    weightKg: state.weightKg,
-    price: state.product.pricePerKg,
+    note: document.getElementById("order-note").value.trim(),
+    items: state.cart.map(({ cartId, ...rest }) => rest),
+    subtotal,
+    deliveryFee,
     upsells: upsellLabels,
-    total: Number(document.getElementById("order-total").textContent.replace(" Dhs", "")),
+    total,
     otpRequestId: state.otpRequestId
   };
 
@@ -460,6 +731,8 @@ document.getElementById("checkout-form").addEventListener("submit", async (e) =>
     if (!res.ok) throw new Error(data.error || "Impossible de passer la commande");
 
     document.getElementById("checkout-form").classList.add("hidden");
+    document.getElementById("cart-items").classList.add("hidden");
+    document.getElementById("cart-empty").classList.add("hidden");
     document.getElementById("order-success").classList.remove("hidden");
     document.getElementById("success-order-id").textContent = data.orderId;
     document.getElementById("success-tracking-link").href = `tracking.html?order=${encodeURIComponent(data.orderId)}`;
@@ -481,6 +754,8 @@ function showToast(message, type) {
   toast.className = `omr-toast show ${type || ""}`;
   setTimeout(() => toast.classList.remove("show"), 3500);
 }
+
+renderCart();
 </script>
 </body>
 </html>
