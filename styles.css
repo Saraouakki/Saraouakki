@@ -354,3 +354,160 @@ body {
 @media (max-width: 640px) {
   .otp-inputs input { width: 2.5rem; height: 2.9rem; }
 }
+
+/* ---------- Legal pages (privacy, terms) ---------- */
+
+.legal-body {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 0.25rem;
+  line-height: 1.75;
+}
+
+.legal-body h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 2.6rem 0 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--varisia-nude-dark);
+}
+
+.legal-body h3 {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 1.6rem 0 0.6rem;
+  opacity: 0.75;
+}
+
+.legal-body p { margin-bottom: 1rem; }
+
+.legal-body ul {
+  list-style: none;
+  margin: 0 0 1.1rem;
+  padding: 0;
+}
+
+.legal-body ul li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.55rem;
+}
+
+.legal-body ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--varisia-gold);
+}
+
+.legal-body a {
+  color: var(--varisia-black);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.legal-body a:hover { color: var(--varisia-gold); }
+
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.legal-table th,
+.legal-table td {
+  text-align: left;
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--varisia-nude-dark);
+  vertical-align: top;
+}
+
+.legal-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  background: var(--varisia-nude-light);
+}
+
+.legal-table-wrap { overflow-x: auto; }
+
+/* Draft banner + "have a lawyer check this" callouts */
+
+.legal-draft-banner {
+  border: 1px solid var(--varisia-black);
+  background: var(--varisia-nude-light);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 2.2rem;
+}
+
+.legal-draft-banner .banner-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--varisia-black);
+  color: var(--varisia-nude);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.7rem;
+}
+
+.review-flag {
+  border-left: 3px solid var(--varisia-gold);
+  background: rgba(201, 168, 118, 0.11);
+  border-radius: 0 10px 10px 0;
+  padding: 0.9rem 1.1rem;
+  margin: 1.1rem 0 1.4rem;
+  font-size: 0.88rem;
+}
+
+.review-flag .flag-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+  opacity: 0.85;
+}
+
+.review-flag p:last-child { margin-bottom: 0; }
+
+.legal-toc {
+  background: var(--varisia-nude-light);
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 2.4rem;
+  font-size: 0.9rem;
+}
+
+.legal-toc ol {
+  margin: 0;
+  padding-left: 1.1rem;
+  columns: 2;
+  column-gap: 2rem;
+}
+
+.legal-toc li { margin-bottom: 0.35rem; }
+
+.legal-meta {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .legal-toc ol { columns: 1; }
+}

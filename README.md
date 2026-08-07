@@ -11,11 +11,14 @@ Luxury e-commerce brand for the GCC and Morocco — smart beauty electronics and
 |---|---|
 | `index.html` | Landing page, product collection, 1-page checkout, OTP verification, inline upsell widget |
 | `tracking.html` | Customer-facing order tracking page |
+| `privacy.html` | Privacy policy — **starter draft, pending legal review** |
+| `terms.html` | Terms of service — **starter draft, pending legal review** |
 | `styles.css` | Varisia luxury theme (colors, typography, components) |
 | `server.js` | Express backend: OTP, order intake, Google Sheets sync, 3PL webhook, tracking API |
 | `package.json` | Backend dependencies |
 | `.env.example` | Environment variable template (Twilio, Google Sheets, 3PL) |
 | `docs/PRODUCT_RESEARCH.md` | 3 curated high-ticket products with sourcing strategy and pricing matrix |
+| `docs/LEGAL_REVIEW_CHECKLIST.md` | What to fill in and have reviewed before publishing the legal pages |
 | `docs/DEPLOYMENT_GUIDE.md` | Step-by-step Hostinger deployment (Node.js App via hPanel) |
 
 ## Quick start (local)
