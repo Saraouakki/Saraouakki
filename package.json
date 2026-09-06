@@ -1,37 +1,31 @@
 {
-  "name": "logistique-transit",
+  "name": "ecc",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "seed": "tsx scripts/seed-notion.ts",
-    "test": "vitest run"
+  "description": "ECC — Everything Claude Code: an agent harness performance system (memory, skills, agents, continuous learning, security scanning).",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ecc": "./bin/ecc.js"
   },
-  "dependencies": {
-    "@notionhq/client": "^5.22.0",
-    "@sentry/node": "^10.63.0",
-    "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.0",
-    "bcryptjs": "^3.0.3",
-    "jose": "^6.2.3",
-    "next": "^15.1.6",
-    "nodemailer": "^9.0.3",
-    "pdf-lib": "^1.17.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+  "files": [
+    "bin",
+    "dist",
+    "skills",
+    "agents"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "ecc": "tsx src/cli.ts"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.7",
-    "@types/nodemailer": "^8.0.1",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "playwright": "^1.61.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vitest": "^4.1.9"
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
