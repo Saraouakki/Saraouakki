@@ -1,288 +1,250 @@
-# Logistique & Transit — Plateforme
+# ECC — Everything Claude Code
 
-Application de gestion logistique combinant :
+**An agent harness performance system.** ECC is not a prompt pack. It gives a
+coding agent the parts a harness usually lacks: durable **memory** across
+sessions, a curated catalog of **skills** and **subagents**, a **learning loop**
+that turns what happened in your sessions into reusable guidance, and
+**AgentShield**, a scanner for the agent's own attack surface — prompts, hooks,
+MCP servers, permissions and secrets.
 
-- **Transit douanier** — dossiers, régime douanier, référence DUM (BADR), bureaux de douane marocains réels,
-  documents (CMR, T1, connaissement, etc.)
-- **Freight / suivi d'expéditions** — timeline d'événements par dossier (enlèvement, transit, douane, livraison)
-- **Gestion de flotte** — véhicules, conteneurs, chauffeurs
-- **Gestion d'entrepôt** — articles en stock, seuils de réapprovisionnement, mouvements d'entrée/sortie,
-  fournisseurs
-- **Comptes multi-rôles** — équipe interne, **clients** et **fournisseurs** ont chacun leur espace connecté,
-  avec auto-inscription et validation par l'équipe
+It is not tied to one tool. The same catalog is projected into Claude Code,
+Codex, Cursor and OpenCode from a single source of truth.
 
-**Notion sert de base de données** : toutes les données (clients, fournisseurs, transporteurs, dossiers,
-stock, documents, comptes utilisateurs, journal d'audit...) vivent dans des bases Notion, et l'application
-Next.js les lit/écrit via l'API officielle Notion.
+---
 
-## Positionnement face à Odoo, aux ERP locaux et à Excel
+## نظرة عامة بالعربية
 
-Le marché marocain du transit/logistique reste très largement sur Excel, même avec des ERP disponibles.
-Cette plateforme cible précisément les frictions qui expliquent ce choix :
+**ECC ليس مجرد مجموعة Prompts أو إعدادات.** هو نظام يضيف للـCoding Agent بنية كاملة
+تخلّيه يشتغل بشكل منظّم ويستفيد من الشغل اللي عمله قبل كده:
 
-| Frein constaté | Réponse apportée |
-|---|---|
-| Peur de perdre l'historique en migrant | **Import CSV** des dossiers existants (`/dossiers/import`) — on part d'un export Excel, pas d'une ressaisie |
-| Peur de l'enfermement dans un nouvel outil | **Export CSV** disponible sur toutes les listes, à tout moment |
-| Vocabulaire douanier générique des ERP | Champs **régime douanier**, **N° DUM (BADR)** et **bureaux de douane marocains réels** (Casablanca Port, Tanger Med, Nador...) au lieu de champs texte libres |
-| Suivi client par téléphone/e-mail seulement | Notification **WhatsApp** automatique au client sur changement de statut (canal réellement utilisé au Maroc) |
-| Outils en français/anglais uniquement | Interface **FR / EN / عربي**, avec mise en page RTL complète pour l'arabe |
+- 🧠 **ذاكرة** — يحفظ القرارات والأعراف والمطبّات المهمة، ويرجّعها في الجلسات الجاية.
+- 🛠️ **Skills** — كتالوج مهارات جاهزة (TDD، تشخيص الأعطال، مراجعة الكود، الأمان،
+  الواجهات، الداتا، الـCI…).
+- 🤖 **Agents** — وكلاء متخصصون للتخطيط، التنفيذ، المراجعة، إصلاح البناء، والأمان.
+- ⚡ **تعلّم مستمر** — يستخرج أنماط من جلساتك ويحوّلها لـinstincts، واللي يثبت منها
+  يترقّى لمهارة كاملة بعد مراجعة بشرية.
+- 🔒 **AgentShield** — فحص أمني للـPrompts والـHooks والـMCP والصلاحيات والأسرار.
+- 🔄 **مش مربوط بأداة واحدة** — نفس الكتالوج بيتولّد لـClaude Code وCodex وCursor وOpenCode.
 
-## Stack
+الترخيص MIT. الأوامر كلها تحت `ecc` (شوف **CLI** تحت).
 
-- Next.js 15 (App Router) + TypeScript, rendu serveur (aucune base de données à héberger)
-- `@notionhq/client` pour interroger les *data sources* Notion, avec cache en mémoire (TTL) et requêtes
-  filtrées côté API pour les portails client/fournisseur
-- Authentification par session : `bcryptjs` (mots de passe hashés dans Notion) + `jose` (JWT signé en cookie
-  httpOnly) + middleware de contrôle d'accès par rôle
-- Rate-limiting sur les routes sensibles (connexion, inscription, réinitialisation), en mémoire par défaut,
-  ou distribué via Upstash Redis si configuré
-- Envoi d'e-mails pluggable (console en dev, SMTP ou Resend en prod), notifications Slack et **WhatsApp**
-  (Twilio)
-- Génération de PDF (`pdf-lib`), upload de fichiers vers Notion (File Upload API)
-- Import/export CSV compatible Excel (BOM UTF-8, délimiteur auto-détecté `,` ou `;`)
-- Tests unitaires (`vitest`) sur la logique d'authentification et de contrôle d'accès
-- CSS natif responsive (pas de dépendance UI), thème clair/sombre automatique, i18n **FR / EN / AR (RTL)**
+---
 
-## Modèle de données Notion
+## What ships today
 
-Une page Notion parente **« 🚚 Logistique & Transit — Plateforme »** contient 15 bases, toutes reliées entre
-elles :
+| Piece | Count | Where |
+|---|---|---|
+| Skills | 31 across 8 categories | `skills/*.md` |
+| Agents | 15 across plan / build / verify | `agents/*.md` |
+| AgentShield rules | 22 across 5 categories | `src/security/rules.ts` |
+| Tool adapters | 4 (Claude Code, Codex, Cursor, OpenCode) | `src/adapters/` |
 
-| Base | Rôle |
-|---|---|
-| `Clients` | Donneurs d'ordre (importateurs/exportateurs) |
-| `Fournisseurs` | Fournisseurs de matières premières, pièces, emballage, services |
-| `Transporteurs` | Sociétés de transport (routier, maritime, aérien, ferroviaire) |
-| `Véhicules` | Camions, semi-remorques, conteneurs — liés à un transporteur |
-| `Chauffeurs` | Conducteurs — liés à un véhicule |
-| `Entrepôts` | Sites d'entreposage |
-| `Articles (Stock)` | Références en stock — liées à un entrepôt **et** à un fournisseur |
-| `Dossiers` | **Table centrale** : un dossier = une expédition/transit, lié à client, fournisseur, transporteur, véhicule, chauffeur, entrepôt, avec statut de workflow, régime douanier, référence DUM (BADR), bureau de douane, dates, poids/volume/valeur |
-| `Documents` | Pièces justificatives par dossier (CMR, facture, T1, B/L, certificat d'origine...), fichier attaché |
-| `Mouvements de stock` | Entrées/sorties de stock, liées à un article, un dossier et un fournisseur |
-| `Étapes de suivi` | Timeline d'événements par dossier (freight tracking) |
-| `Utilisateurs` | Comptes de connexion — rôle (Interne/Client/Fournisseur), permission interne (Admin/Lecture seule), lien vers un `Client` ou `Fournisseur`, mot de passe hashé, jeton de réinitialisation |
-| `Journal d'audit` | Connexions, échecs de connexion, créations de compte/dossier, changements de statut, ajouts de documents |
-| `Grilles tarifaires` | Grilles de prix par mode/origine/destination (prix/kg, prix/CBM, poids minimum facturable, devis minimum, devise, délai), utilisées par le simulateur de devis public |
-| `Demandes de devis` | Leads captés depuis `/devis` : contact, trajet demandé, estimation calculée, statut de suivi commercial (`Nouveau` / `Contacté` / `Converti` / `Perdu`) |
+The catalog is meant to grow — by hand and through the learning loop, which
+writes new skill drafts into `.ecc/drafts/` for review. Counts above are what is
+actually in this repository, not a roadmap.
 
-Toutes les relations sont bidirectionnelles (DUAL) côté Fournisseurs : depuis la fiche d'un fournisseur dans
-Notion, on voit directement les articles qu'il fournit, les dossiers et les mouvements de stock associés.
+## Install
 
-Le statut d'un dossier suit ce workflow :
-`Créé → Enlèvement → En transit → Douane - contrôle → Douane - dédouané → Livraison en cours → Livré` (ou `Annulé`).
-
-Le régime douanier (`Mise à la consommation`, `Admission temporaire`, `Transit (T1)`, `Entrepôt sous
-douane`, `Exportation définitive`, `Réexportation`) et le bureau de douane (liste réelle : Casablanca Port,
-Casablanca Aéroport Mohammed V, Tanger Med, Tanger Ville, Nador, Agadir Port, Oujda, Marrakech Aéroport,
-Fès) sont des champs dédiés, au même titre que la référence de déclaration douanière (**N° DUM/BADR**).
-
-### Créer le schéma automatiquement (nouveau workspace)
-
-Pour démarrer un **nouveau** déploiement (nouveau client, nouvelle entreprise) sans tout recréer à la main :
-
-```bash
-NOTION_TOKEN=secret_xxx npx tsx scripts/seed-notion.ts
-```
-
-Ce script crée la page parente et les bases avec leurs relations dans le workspace Notion associé au
-jeton fourni, puis imprime le bloc `NOTION_DS_*` à coller dans `.env.local`. Il ne crée aucune donnée de
-démonstration — la base est vide, prête pour un client réel. Partagez ensuite la page créée avec votre
-intégration Notion (`···` → `Connexions`).
-
-> Le script couvre les 13 bases historiques (Clients à Journal d'audit). Les deux bases ajoutées pour le
-> simulateur de devis (`Grilles tarifaires`, `Demandes de devis`) sont créées manuellement pour l'instant sur
-> un nouveau workspace — à faire évoluer si ce script doit rester la source de vérité pour les nouveaux
-> déploiements.
-
-## Simulateur de cotation automatique (`/devis`)
-
-Page **publique**, sans authentification, pensée comme point d'entrée pour un prospect qui trouve le lien
-sur un site vitrine, une annonce ou WhatsApp :
-
-1. Le prospect renseigne mode de transport / origine / destination / poids / volume.
-2. Une estimation s'affiche **instantanément** (calcul côté client dans `lib/quote.ts`, sans aller-retour
-   serveur), à partir des grilles tarifaires actives gérées sur la page interne `/tarifs`. Si aucune grille
-   ne correspond au trajet, un message invite à demander un devis personnalisé plutôt qu'un blocage.
-3. S'il le souhaite, le prospect envoie ses coordonnées (`/api/devis`, endpoint public rate-limité) : le
-   montant est **recalculé côté serveur** (jamais une valeur envoyée par le client) et enregistré comme
-   `Demande de devis` dans Notion. L'équipe interne est notifiée par e-mail et/ou WhatsApp si configuré, et
-   la demande apparaît dans le panneau « Demandes de devis reçues » de la page `/tarifs`.
-
-Le calcul (`lib/quote.ts`, testé unitairement) applique : filtrage par mode + grille active, correspondance
-par trajet (exacte, partielle ou générique `International`), tarification au poids facturable (`max(poids
-saisi, poids minimum facturable)` × prix/kg) ou au volume (volume × prix/CBM), avec un plancher au devis
-minimum de la grille.
-
-## Migration depuis Excel
-
-Sur la page **Dossiers**, un transitaire qui a déjà un fichier Excel peut :
-
-1. Cliquer **« Télécharger un modèle »** sur la page d'import (`/dossiers/import`) pour obtenir les bonnes
-   colonnes.
-2. Reformater son fichier existant selon ce modèle (ou exporter ses dossiers déjà saisis ici en CSV, les
-   éditer dans Excel, puis les réimporter — le format est identique dans les deux sens).
-3. Importer le CSV : les colonnes `Client`, `Transporteur`, `Fournisseur` sont résolues par nom exact vers
-   les fiches Notion existantes ; toute valeur non reconnue (statut, régime douanier...) est signalée en
-   avertissement plutôt que de bloquer tout l'import. Limite : 200 lignes par import (à scinder au-delà).
-
-## Comptes et rôles
-
-Trois rôles, chacun avec son propre espace :
-
-| Rôle | Accès |
-|---|---|
-| **Interne** (équipe logistique) | Accès complet : Vue d'ensemble, tous les Dossiers, Flotte, Entrepôt, Clients, Fournisseurs, Comptes en attente, Journal d'audit. Une **permission** (`Admin` / `Lecture seule`) distingue qui peut écrire (changer un statut, créer/importer des dossiers, valider un compte) de qui consulte seulement. |
-| **Client** | « Mon espace » : uniquement ses propres dossiers (filtrés côté API Notion via la relation `Client`), avec suivi, documents et export PDF. |
-| **Fournisseur** | « Mon espace » : les dossiers où il est la source d'approvisionnement, les articles qu'il fournit, et les mouvements de stock associés. |
-
-L'accès est contrôlé à plusieurs niveaux : un middleware (`middleware.ts`) qui bloque les zones réservées à
-l'équipe interne, une vérification de propriété sur la page de détail d'un dossier (`lib/access.ts`, testée
-unitairement), et une vérification de permission sur chaque route d'écriture.
-
-### Auto-inscription
-
-Un client ou un fournisseur peut demander un accès depuis `/signup` (nom, société, email, mot de passe). Le
-compte est créé avec le statut **« En attente »** et n'est pas utilisable tant qu'un membre de l'équipe
-interne ne l'a pas validé depuis la page **Comptes** (`/comptes`). Un e-mail de notification est envoyé à
-`ADMIN_NOTIFICATION_EMAIL` si configuré.
-
-### Mot de passe oublié
-
-`/forgot-password` envoie un lien de réinitialisation à usage unique (valable 1h, jeton haché en base) ;
-`/reset-password` permet de choisir un nouveau mot de passe. Sans configuration d'envoi d'e-mail (voir plus
-bas), le lien est simplement journalisé dans la console du serveur — pratique en développement, à corriger
-avant un vrai lancement.
-
-### Comptes de démonstration
-
-Créés dans la base `Utilisateurs`, mot de passe identique pour les trois : `Logistique2026!`
-
-| Email | Rôle |
-|---|---|
-| `srouakki@gmail.com` | Interne (Admin) |
-| `client@atlastextiles.ma` | Client (Atlas Textiles SARL) |
-| `contact@textilesdusud.ma` | Fournisseur (Textiles du Sud) |
-
-## Configuration
-
-### 1. Créer une intégration Notion
-
-1. Allez sur https://www.notion.so/my-integrations et créez une **intégration interne**.
-2. Copiez le jeton (`secret_...`).
-3. Ouvrez la page Notion **« 🚚 Logistique & Transit — Plateforme »**, cliquez sur `···` → `Connexions` →
-   ajoutez votre intégration.
-
-### 2. Variables d'environnement
-
-```bash
-cp .env.example .env.local
-```
-
-Champs obligatoires : `NOTION_TOKEN`, `AUTH_SECRET` (valeur aléatoire, ex. `openssl rand -base64 32`), et les
-15 `NOTION_DS_*` (déjà pré-remplis avec les bases créées pour ce projet, ou générés par `scripts/seed-notion.ts`
-pour un nouveau workspace — voir la note plus haut pour les deux bases du simulateur de devis).
-
-Champs optionnels (l'app fonctionne sans, en mode dégradé documenté dans `.env.example`) :
-
-| Variable | Effet si absente |
-|---|---|
-| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | Rate-limiting en mémoire locale au lieu de distribué (voir « Limites » ci-dessous) |
-| `SMTP_HOST` / `RESEND_API_KEY` | Les e-mails (reset password, notifications, activation de compte) sont journalisés en console au lieu d'être envoyés |
-| `SLACK_WEBHOOK_URL` | Les notifications Slack sont journalisées en console |
-| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_WHATSAPP_FROM` | Les notifications WhatsApp au client sont journalisées en console au lieu d'être envoyées |
-| `SENTRY_DSN` | Pas de remontée d'erreurs externe, seulement `console.error` |
-| `ADMIN_NOTIFICATION_EMAIL` | Personne n'est notifié par e-mail des nouvelles inscriptions ni des nouvelles demandes de devis (à valider manuellement sur `/comptes` ou `/tarifs`) |
-| `ADMIN_WHATSAPP_NUMBER` | Personne n'est notifié par WhatsApp des nouvelles demandes de devis (nécessite les variables `TWILIO_*` ci-dessus) |
-
-### 3. Installer et lancer
-
-```bash
+```sh
 npm install
-npm run dev    # démarre l'app sur http://localhost:3000
-npm test       # exécute les tests unitaires (auth, session, contrôle d'accès)
-npm run build  # build de production
+npm run build
+npm link          # optional: puts `ecc` on your PATH
 ```
 
-Ouvrez http://localhost:3000 — vous serez redirigé vers `/login`.
+Requires Node 20+. There are no runtime dependencies.
 
-## Fonctionnalités de l'application
+## Quickstart
 
-- **Connexion par email/mot de passe**, rate-limitée, session signée en cookie httpOnly, déconnexion en un
-  clic, sélecteur de langue **FR / EN / عربي** (RTL complet en arabe).
-- **Auto-inscription** client/fournisseur avec file d'attente de validation par l'équipe interne.
-- **Mot de passe oublié / réinitialisation** par lien à usage unique.
-- **Vue d'ensemble** (interne) — KPIs (dossiers actifs, en dédouanement, valeur en transit, véhicules
-  disponibles, alertes de stock, nombre de clients/fournisseurs) + dossiers récents + alertes de
-  réapprovisionnement.
-- **Dossiers** (interne) — recherche/filtre par statut/tri, **import/export CSV** (migration Excel),
-  création de dossier depuis un formulaire (avec régime douanier, N° DUM, bureau de douane marocain réel),
-  page de détail avec documents (**upload de fichiers**), timeline de suivi, **export PDF** du dossier, et
-  **changement de statut en direct** (déclenche un e-mail + **WhatsApp** au client et une notification Slack).
-- **Flotte** (interne) — véhicules/conteneurs et chauffeurs, avec statuts.
-- **Entrepôt** (interne) — entrepôts, stock par article (recherche + filtre alertes + export CSV) avec
-  fournisseur associé, mouvements d'entrée/sortie.
-- **Clients** / **Fournisseurs** (interne) — répertoires avec recherche et export CSV, compteurs d'articles
-  et de dossiers liés pour les fournisseurs.
-- **Comptes** (interne) — validation ou refus des demandes d'inscription en attente.
-- **Journal d'audit** (interne) — connexions, échecs de connexion, créations, changements de statut.
-- **Tarifs** (interne) — gestion des grilles tarifaires (création, activation/désactivation) qui alimentent
-  le simulateur public, et suivi des demandes de devis reçues.
-- **Devis** (public, `/devis`) — simulateur de cotation instantané sans compte, avec capture de lead et
-  notification e-mail/WhatsApp de l'équipe interne sur chaque nouvelle demande.
-- **Mon espace** (client ou fournisseur) — vue filtrée automatiquement, avec export PDF des dossiers.
-- **Responsive** — menu latéral en tiroir sur mobile (avec inversion correcte en RTL), grilles et tableaux
-  adaptatifs.
+```sh
+ecc init                      # create .ecc/ for this project
+ecc install claude-code       # write .claude/skills, .claude/agents, CLAUDE.md
+ecc scan --fail-on high       # audit the agent configuration
+```
 
-Toute donnée manquante ou mal configurée (jeton invalide, page non partagée) affiche un message d'erreur
-explicite dans l'interface plutôt qu'un plantage, et remonte vers Sentry si configuré.
+Record what the next session should not have to rediscover:
 
-## Vérifications effectuées
+```sh
+ecc memory add "money is stored in minor units end to end" --kind convention --scope lib/money
+ecc memory add "the seed script must run before the api tests" --kind gotcha --tags tests
+ecc memory pack                # the markdown block a session gets primed with
+```
 
-- Build de production, typecheck et 26 tests unitaires (vitest) passent, dont 10 pour la logique pure de
-  cotation (`lib/quote.ts` : filtrage par mode/grille active, correspondance de trajet exacte/partielle/
-  générique, tarification au poids vs au volume, planchers devis minimum et poids minimum facturable).
-- Contrôle d'accès par rôle (Interne Admin / Interne Lecture seule / Client / Fournisseur) vérifié avec des
-  sessions simulées (signature JWT valide, sans dépendre d'un vrai compte Notion).
-- Rendu visuel vérifié par capture d'écran (Playwright + Chromium) : connexion en FR/EN/AR, bascule RTL du
-  menu latéral et du tiroir mobile, page d'import CSV (téléchargement du modèle, message d'erreur propre
-  quand l'API échoue), simulateur de devis public en FR/AR/mobile (formulaire, message « pas de grille »,
-  ouverture du formulaire de contact) et page interne `/tarifs`. Un bug d'i18n repéré ainsi (titre non
-  traduit sur le chemin d'erreur de la Vue d'ensemble) a été corrigé sur-le-champ.
-- Chaque route qui écrit dans Notion échoue proprement (JSON + message clair) plutôt que de planter, y
-  compris en cas d'erreur Notion inattendue — vérifié en direct sur `/api/devis` (validation 400 sur trajet/
-  contact incomplet, erreur Notion propre en 500 sans jeton valide).
+Then learn from the sessions you have already run:
 
-Non vérifiable dans cet environnement (pas de jeton Notion réel ni d'identifiants de service) : le rendu
-avec de vraies données Notion (grilles tarifaires réelles, estimation chiffrée réelle), l'envoi réel
-d'e-mails/WhatsApp/Slack, et l'exécution de `scripts/seed-notion.ts` contre un vrai workspace.
+```sh
+ecc learn                      # mine .ecc/sessions/*.jsonl into instincts
+ecc learn list                 # review them
+ecc learn accept <id>          # promote to always-on guidance
+ecc learn --promote            # write skill drafts for what met the policy
+ecc install claude-code        # regenerate, now carrying memory + instincts
+```
 
-## Est-ce prêt pour un lancement commercial international ?
+## Concepts
 
-Tout ce qui précède est réellement implémenté et testé dans les limites décrites ci-dessus. Honnêtement,
-quelques points restent à traiter avant une mise en production à grande échelle :
+### 🧠 Memory
 
-- **Scalabilité Notion** : l'API Notion est limitée à ~3 requêtes/seconde. Le cache en mémoire et les
-  requêtes filtrées réduisent la charge, mais au-delà de quelques milliers de dossiers, une vraie base de
-  données (Postgres, etc.) synchronisée depuis Notion serait plus indiquée.
-- **Rate-limiting distribué** : sans Upstash configuré, le rate-limiting est en mémoire locale — efficace sur
-  une seule instance, pas partagé entre plusieurs instances serverless.
-- **E-mails/WhatsApp/Slack** : les intégrations sont câblées et basculent automatiquement en mode "journal
-  console" si aucun fournisseur n'est configuré — à brancher sur un vrai SMTP/Resend/Twilio/Slack avant le
-  lancement.
-- **i18n** : l'infrastructure FR/EN/AR couvre la navigation, la connexion et la vue d'ensemble ; étendre à
-  d'autres pages se fait en ajoutant des clés dans `lib/i18n.ts`.
-- **Sentry** : câblé en mode « no-op sans DSN » ; fournir un `SENTRY_DSN` réel pour l'activer.
-- **`scripts/seed-notion.ts`** : vérifié par typage strict contre le SDK Notion officiel, mais non exécuté
-  contre un vrai compte dans cet environnement — à tester une fois sur un workspace de test avant de le
-  proposer à des clients.
+An append-only JSONL log in `.ecc/memory.jsonl`. Each entry has a kind
+(`decision`, `convention`, `gotcha`, `fact`, `preference`, `todo`), a scope, tags
+and a confidence.
 
-## Étendre le projet
+Recording the same fact twice does not create a second copy — it **reinforces**
+the first one (`hits`, confidence). Recall ranks by term overlap × confidence ×
+reinforcement × recency, and `ecc memory pack` renders the top entries as a
+markdown block that fits a stated character budget.
 
-- Génération automatique de documents douaniers plus riches (actuellement un résumé PDF du dossier).
-- Recherche plein texte inter-bases, pagination pour de très gros volumes.
-- Rôles internes plus fins (ex. par entrepôt ou par zone géographique).
-- Facturation (le simulateur de devis couvre la cotation, pas encore la facturation).
-- Import CSV pour Clients/Fournisseurs/Articles (aujourd'hui limité aux Dossiers).
-- `scripts/seed-notion.ts` ne crée pas encore les bases `Grilles tarifaires` / `Demandes de devis`.
+What belongs in memory: decisions and why, conventions found in the codebase,
+gotchas that cost time. What does not: session narration, unverified guesses,
+secrets. The `context-handoff` skill states the rule in full.
+
+### 🛠️ Skills
+
+Markdown files with frontmatter (`name`, `description`, `category`, `tags`,
+`maturity`, `tools`) and a body of instructions. Categories shipped: engineering,
+verification, research, security, frontend, data, ops, process.
+
+```sh
+ecc skills list
+ecc skills search "flaky test"
+ecc skills show tdd-loop
+```
+
+`ecc doctor` validates every file: a description too short to trigger on, a body
+with no instructions, or a duplicate name is reported as an error.
+
+### 🤖 Agents
+
+Subagent definitions with a `phase` (plan / build / verify), a tool list and a
+model. They are deliberately narrow — `planner` cannot edit files, `code-reviewer`
+does not fix what it finds, `build-fixer` may not skip a test to get green.
+
+```sh
+ecc agents list
+ecc agents show code-reviewer
+```
+
+### ⚡ Continuous learning
+
+Any harness that can append JSONL events feeds the loop. One event per line in
+`.ecc/sessions/*.jsonl`:
+
+```json
+{"session":"s1","type":"tool","command":"npm test -- auth.test.ts","exitCode":0}
+{"session":"s1","type":"error","text":"TypeError: cannot read properties of undefined"}
+{"session":"s1","type":"edit","file":"src/auth/session.ts"}
+{"session":"s1","type":"correction","text":"Do not edit generated files under src/gen"}
+```
+
+`ecc learn` mines four signals: repeated **commands** (normalised so arguments
+that vary do not split the count), error → **recovery** pairs, file **hotspots**,
+and explicit human **corrections**.
+
+The result is an *instinct*: a one-sentence rule with its evidence and the
+sessions it came from. Instincts are proposed, not trusted. Promotion needs
+support ≥ 3 across ≥ 2 sessions (a human correction counts immediately), and a
+promoted instinct becomes a **draft skill** in `.ecc/drafts/` that stays
+`maturity: draft` until someone confirms it. The `learning-curator` agent exists
+for exactly that review.
+
+```
+session events → instincts (proposed) → accepted → skill draft → reviewed skill
+```
+
+### 🔒 AgentShield
+
+The agent's configuration is executable text, and it is a real attack surface.
+`ecc scan` walks five categories:
+
+| Category | Examples of what it catches |
+|---|---|
+| `secrets` | AWS / GitHub / Anthropic / Slack keys, private keys, hardcoded credential literals |
+| `prompts` | instruction-override text in a skill file, credential exfiltration, remote scripts piped to a shell, prompts that opt out of human confirmation |
+| `hooks` | hooks that fetch and run remote code, destructive commands, `eval`, piping the environment somewhere |
+| `permissions` | permission prompts disabled by default, `Bash(*)`, fetch allowlisted for every domain, writes outside the project |
+| `mcp` | plaintext HTTP servers, unpinned `npx -y` packages, credentials inlined in `env` |
+
+```sh
+ecc scan                       # whole project, exits 1 on high or critical
+ecc scan .claude --fail-on medium
+ecc scan --json                # for CI
+```
+
+Findings are redacted before printing — a leaked key is never echoed in full.
+False positives are suppressed two ways: a `# ecc-ignore` marker on the line, or
+path fragments listed in a `.eccignore` file at the scan root.
+
+### 🔄 Multi-tool support
+
+One catalog, four projections:
+
+| Target | Writes |
+|---|---|
+| `claude-code` | `.claude/skills/<name>/SKILL.md`, `.claude/agents/<name>.md`, `CLAUDE.md` |
+| `codex` | a single composed `AGENTS.md` |
+| `cursor` | `.cursor/rules/*.mdc`, plus an always-applied memory rule |
+| `opencode` | `.opencode/agent/*.md`, `.opencode/AGENTS.md` |
+
+Every projection carries the current memory pack and the active instincts, so
+"what the project knows" is the same on every tool. Adding a target is one file
+implementing `Adapter`.
+
+## CLI
+
+```
+ecc init                          Create .ecc/ state for this project
+ecc install <target> [--dry-run]  Project the catalog into an agent tool
+ecc skills list|search|show       Browse the skill catalog
+ecc agents list|show              Browse the agent catalog
+ecc memory add <text>             Record a fact (--kind, --scope, --tags)
+ecc memory search <query>         Recall matching memories
+ecc memory pack [--query]         Print a context pack (--budget)
+ecc memory forget <needle>        Drop matching memories
+ecc memory compact                Collapse duplicates, drop stale entries
+ecc learn [--promote]             Mine session events into instincts (--events)
+ecc learn list                    Show the current instincts
+ecc learn accept|reject <id>      Curate an instinct before it reaches sessions
+ecc scan [path] [--fail-on]       Run AgentShield (--json)
+ecc doctor                        Validate the catalog and the installation
+ecc stats                         Summarise memory, instincts and catalog size
+```
+
+Global flags: `--root <dir>` (default: cwd), `--json`, `--dry-run`.
+
+## Layout
+
+```
+src/core/        frontmatter parsing, workspace paths
+src/memory/      the memory store and the context pack builder
+src/registry/    skill + agent loading, validation, search
+src/learning/    instinct extraction, storage, promotion policy
+src/security/    AgentShield rules and scanner
+src/adapters/    per-tool projections
+skills/          the shipped skill catalog
+agents/          the shipped agent catalog
+test/            vitest suites for every module
+```
+
+## Development
+
+```sh
+npm test          # vitest
+npm run typecheck # tsc --noEmit
+npm run build     # tsc
+npm run ecc -- doctor
+```
+
+The test suite includes a self-scan: AgentShield must find nothing at or above
+`high` severity in this repository. Adding a skill that tells an agent to bypass
+its guardrails will fail CI, which is the intended behaviour.
+
+## Contributing a skill
+
+1. Add `skills/<name>.md` with the frontmatter fields above.
+2. Write a description precise enough that an agent knows *when* to reach for it —
+   this is what routing keys on.
+3. Keep the body imperative and specific. Include what not to do; that is usually
+   where the value is.
+4. Run `npm test` — the catalog validation and the self-scan both gate it.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
